@@ -1,15 +1,15 @@
 <?php
 include 'functions.php';
-// Your PHP code here.
+// Seu código PHP aqui.
 
-// Home Page template below.
+// Template da página inicial abaixo.
 ?>
 
-<?=template_header('Home')?>
+<?= template_header('Home') ?>
 
 <div class="content">
-	<h2>Goski</h2>
-	<p>an art gallery.</p>
+    <h2>Goski</h2>
+    <p>Uma galeria de arte.</p>
 </div>
 
-<?=template_footer()?>
+<?= template_footer() ?>
