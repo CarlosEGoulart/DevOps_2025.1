@@ -31,8 +31,8 @@ echo <<<EOT
     <body>
         <nav class="navtop">
             <div>
-                <h1>Galeria Goski</h1>
-                <a href="index.php"><i class="fas fa-home"></i>Home</a>
+		<a href="index.php" class="logo"><img src="$logo_url" alt="GOSKI Gallery Logo"></a>
+		<a href="index.php"><i class="fas fa-home"></i>Home</a>
                 <a href="read.php"><i class="fas fa-address-book"></i>Artes</a>
             </div>
         </nav>
