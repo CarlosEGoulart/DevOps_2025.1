@@ -1,22 +1,26 @@
 <?php
 include 'functions.php';
-// Conecta ao banco de dados MySQL
 $pdo = pdo_connect_mysql();
-// Obtém o número da página via requisição GET (parâmetro URL: page), se não existir, define a página para 1
 $page = isset($_GET['page']) && is_numeric($_GET['page']) ? (int)$_GET['page'] : 1;
-// Número de registros a serem exibidos por página
 $records_per_page = 5;
 
-// Prepara a instrução SQL e obtém os registros da tabela 'art', LIMIT determinará a página
-$stmt = $pdo->prepare('SELECT * FROM art ORDER BY id LIMIT :current_page, :record_per_page');
-$stmt->bindValue(':current_page', ($page - 1) * $records_per_page, PDO::PARAM_INT);
-$stmt->bindValue(':record_per_page', $records_per_page, PDO::PARAM_INT);
-$stmt->execute();
-// Busca os registros para que possamos exibi-los no nosso template.
-$arts = $stmt->fetchAll(PDO::FETCH_ASSOC);
+try {
+    $stmt = $pdo->prepare('SELECT * FROM art ORDER BY id LIMIT :current_page, :record_per_page');
+    $stmt->bindValue(':current_page', ($page - 1) * $records_per_page, PDO::PARAM_INT);
+    $stmt->bindValue(':record_per_page', $records_per_page, PDO::PARAM_INT);
+    $stmt->execute();
+    $arts = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Obtém o número total de obras de arte, para determinar se deve haver botões de próxima e anterior
-$num_arts = $pdo->query('SELECT COUNT(*) FROM art')->fetchColumn();
+    $num_arts = $pdo->query('SELECT COUNT(*) FROM art')->fetchColumn();
+
+    gravarLog("Página de listagem de artes acessada. Página: " . $page);
+
+} catch (PDOException $e) {
+    gravarLog("Erro ao ler artes: " . $e->getMessage());
+    echo "Ocorreu um erro ao carregar a lista de artes.";
+    $arts = []; // Garante que $arts seja um array vazio para evitar erros no template
+    $num_arts = 0;
+}
 ?>
 
 <?= template_header('Lista de Artes') ?>
@@ -56,9 +60,7 @@ $num_arts = $pdo->query('SELECT COUNT(*) FROM art')->fetchColumn();
             <a href="read.php?page=<?= $page - 1 ?>"><i class="fas fa-angle-double-left fa-sm"></i></a>
         <?php endif; ?>
         <?php
-        // Calcula o número total de páginas
         $total_pages = ceil($num_arts / $records_per_page);
-        // Exibe os números das páginas
         for ($i = max(1, $page - 2); $i <= min($total_pages, $page + 2); $i++): ?>
             <a href="read.php?page=<?= $i ?>" class="<?= ($i == $page) ? 'current' : '' ?>"><?= $i ?></a>
         <?php endfor; ?>

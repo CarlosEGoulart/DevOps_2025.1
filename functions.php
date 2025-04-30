@@ -7,10 +7,17 @@ function pdo_connect_mysql() {
     try {
         return new PDO('mysql:host=' . $DATABASE_HOST . ';dbname=' . $DATABASE_NAME . ';charset=utf8', $DATABASE_USER, $DATABASE_PASS);
     } catch (PDOException $exception) {
-        // Se houver um erro na conexão, interrompe o script e exibe o erro.
         exit('Falha ao conectar ao banco de dados!');
     }
 }
+
+function gravarLog($mensagem) {
+    $logFile = 'application.log';
+    $timestamp = date('Y-m-d H:i:s');
+    $logMensagem = "[{$timestamp}] {$mensagem}\n";
+    file_put_contents($logFile, $logMensagem, FILE_APPEND);
+}
+
 function template_header($title) {
 echo <<<EOT
 <!DOCTYPE html>
@@ -31,6 +38,7 @@ echo <<<EOT
         </nav>
 EOT;
 }
+
 function template_footer() {
 echo <<<EOT
     </body>
