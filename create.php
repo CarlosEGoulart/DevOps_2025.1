@@ -28,14 +28,14 @@ if (!empty($_POST)) {
     <form action="create.php" method="post">
         <label for="id">ID</label>
         <label for="title">Título</label>
-        <input type="text" name="id" placeholder="26" value="auto" id="id">
-        <input type="text" name="title" placeholder="Gato Mafioso" id="title">
+        <input type="text" name="id" placeholder="ID" value="auto" id="id">
+        <input type="text" name="title" placeholder="Titulo da obra" id="title">
         <label for="description">Descrição</label>
         <label for="year">Ano</label>
-        <input type="text" name="description" placeholder="Uma obra de arte representando uma figura ilustrativa de um gato mafioso." id="description">
-        <input type="text" name="year" placeholder="2024" id="year">
+        <input type="text" name="description" placeholder="Descricao da obra" id="description">
+        <input type="text" name="year" placeholder="Ano de criacao" id="year">
         <label for="url">URL</label>
-        <input type="text" name="url" placeholder="aaaaaaaaaaa" id="url">
+        <input type="text" name="url" placeholder="Url da imagem" id="url">
         <input type="submit" value="Criar">
     </form>
     <?php if ($msg): ?>
