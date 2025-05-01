@@ -33,7 +33,7 @@ if (!empty($_POST)) {
         <label for="description">Descrição</label>
         <label for="year">Ano</label>
         <input type="text" name="description" placeholder="Descricao da obra" id="description">
-        <input type="text" name="year" placeholder="Ano de criacao da obra" id="year">
+        <input type="text" name="year" placeholder="Ano de criacao" id="year">
         <label for="url">URL</label>
         <input type="text" name="url" placeholder="Url da imagem" id="url">
         <input type="submit" value="Criar">
