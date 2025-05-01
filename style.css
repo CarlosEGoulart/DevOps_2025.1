@@ -265,3 +265,15 @@ body {
     color: #ffcdd2;
     border-color: #ffcdd2;
 }
+
+.navtop div .logo {
+    display: flex;
+    align-items: center;
+    text-decoration: none; /* Remove sublinhado do link da logo */
+}
+
+.navtop div .logo img {
+    height: 30px; /* Ajuste a altura da logo conforme necessário */
+    margin-right: 10px; /* Espaço entre a logo e o título */
+    vertical-align: middle; /* Alinha a logo verticalmente com o texto */
+}
