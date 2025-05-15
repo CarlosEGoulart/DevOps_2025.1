@@ -16,8 +16,8 @@ class Database {
         this.nextExhibitionId = 1;
     }
     // ART CRUD
-    createArt(title, description, year) {
-        const newArt = new Art_1.default(this.nextArtId++, title, description, year);
+    createArt(title, description, year, imageUrl) {
+        const newArt = new Art_1.default(this.nextArtId++, title, description, year, imageUrl);
         this.ArtDb.push(newArt);
         return newArt;
     }

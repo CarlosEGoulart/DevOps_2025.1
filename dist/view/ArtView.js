@@ -107,7 +107,8 @@ class ArtView {
         const title = readlineSync.question("Título: ");
         const description = readlineSync.question("Descrição: ");
         const year = readlineSync.questionInt("Ano: ");
-        const newArt = this.artController.createArt(title, description, year);
+        const imageUrl = readlineSync.question("Url da imagem: ");
+        const newArt = this.artController.createArt(title, description, year, imageUrl);
         if (newArt) {
             this.message.showMessage(EnumType_1.MessageType.Success);
         }

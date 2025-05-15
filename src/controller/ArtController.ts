@@ -8,8 +8,8 @@ export default class ArtController {
         this.db = db;
     }
 
-    public createArt(title: string, description: string, year: number): Art {
-        return this.db.createArt(title, description, year);
+    public createArt(title: string, description: string, year: number, imageUrl: string): Art {
+        return this.db.createArt(title, description, year, imageUrl);
     }
 
     public getArt(id: number): Art | undefined;

@@ -4,8 +4,8 @@ class ArtController {
     constructor(db) {
         this.db = db;
     }
-    createArt(title, description, year) {
-        return this.db.createArt(title, description, year);
+    createArt(title, description, year, imageUrl) {
+        return this.db.createArt(title, description, year, imageUrl);
     }
     getArt(param, extra) {
         if (typeof param === "number") {
