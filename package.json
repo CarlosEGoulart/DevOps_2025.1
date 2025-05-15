@@ -1,0 +1,25 @@
+{
+  "name": "poo-2025-1",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "tsx src/index.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "mysql2": "^3.14.1",
+    "readline-sync": "^1.4.10"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.14",
+    "@types/readline-sync": "^1.4.8",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.3.2",
+    "typescript": "^5.8.3"
+  }
+}
