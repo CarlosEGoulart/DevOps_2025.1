@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galeria de Arte</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="/dist/view/interface/script.js"></script>
+</head>
+
+<body>
+    <header>
+        <h1>Criação.</h1>
+    </header>
+    <main>
+        <section id="artists">
+            <h2>Artistas</h2>
+            <form id="add-artist-form">
+                <input type="text" id="artist-name" placeholder="Nome do artista" required>
+                <input type="text" id="artist-bio" placeholder="Biografia do artista" required>
+                <input type="date" id="artist-birth-year" placeholder="Ano de nascimento" required>
+                <input type="text" id="artist-instagram" placeholder="Instagram do artista" required>
+                <button type="submit">Adicionar</button>
+            </form>
+            <div class="grid" id="artists-grid"></div>
+        </section>
+
+        <section id="artworks">
+            <h2>Obras de Arte</h2>
+            <form id="add-artwork-form">
+                <input type="text" id="artwork-title" placeholder="Título da obra" required>
+                <input type="text" id="artwork-description" placeholder="Descrição da obra" required>
+                <input type="text" id="artwork-year" placeholder="Ano da obra" required>
+                <input type="ẗext" id="artwork-url" placeholder="URL da imagem" required>
+                <input type="text" id="artwork-artist" placeholder="Artista" required>
+                <button type="submit">Adicionar</button>
+            </form>
+            <div class="grid" id="artworks-grid"></div>
+        </section>
+
+        <section id="exhibitions">
+            <h2>Exposições</h2>
+            <form id="add-exhibition-form">
+                <input type="text" id="exhibition-name" placeholder="Nome da exposição" required>
+                <input type="text" id="exhibition-description" placeholder="Descrição da exposição" required>
+                <input type="text" id="exhibition-arts" placeholder="Obras de arte" required>
+                <button type="submit">Adicionar</button>
+            <div class="grid" id="exhibitions-grid"></div>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2024 Galeria de Arte</p>
+    </footer>
+</body>
+
+</html>
