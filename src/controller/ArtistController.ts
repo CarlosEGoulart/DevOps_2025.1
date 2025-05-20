@@ -1,62 +1,26 @@
-import Database from "../db/Database";
-import Artist from "../model/Artist";
+import Database from '../db/Database';
 
 export default class ArtistController {
     private db: Database;
+    constructor(db: Database) { this.db = db; }
 
-    constructor(db: Database) {
-        this.db = db;
+    async createArtist(name: string, bio: string, birthYear: number, instagram: string) {
+        return await this.db.createArtist(name, bio, birthYear, instagram);
     }
 
-    public createArtist(name: string, bio: string, birthYear: number, instagram: string): Artist {
-        return this.db.createArtist(name, bio, birthYear, instagram);
+    async listArtists() {
+        return await this.db.listArtists();
     }
 
-    public getArtist(id: number): Artist | undefined;
-    public getArtist(name: string): Artist | undefined;
-    public getArtist(id: number, extra: string): Artist | undefined;
-    public getArtist(param: number | string, extra?: string): Artist | undefined {
-        if (typeof param === "number") {
-            if (typeof extra === "string") {
-                return this.db.readArtist(param);
-            }
-            return this.db.readArtist(param);
-        } else if (typeof param === "string") {
-            return this.db.readArtistByName(param);
-        }
+    async getArtist(id: number) {
+        return await this.db.getArtist(id);
     }
 
-    public listArtists(): Artist[] {
-        return this.db.readAllArtists();
+    async updateArtist(id: number, name: string, bio: string, birthYear: number, instagram: string) {
+        return await this.db.updateArtist(id, name, bio, birthYear, instagram);
     }
 
-    public updateArtist(id: number, name: string, bio: string, birthYear: number, instagram: string): boolean;
-    public updateArtist(param: number | string, name: string, bio: string, birthYear: number, instagram: string, extra?: string): boolean;
-    public updateArtist(id: number, name: string, bio: string, birthYear: number, instagram: string, extra?: string): boolean;
-    public updateArtist(param: number | string, name: string, bio: string, birthYear: number, instagram: string, extra?: string): boolean {
-        if (typeof param === "number") {
-            return this.db.updateArtist(param, name, bio, birthYear, instagram);
-        } else if (typeof param === "string") {
-            const artist = this.db.readArtistByName(param);
-            if (artist) {
-                return this.db.updateArtist(artist.getId(), name, bio, birthYear, instagram);
-            }
-        }
-        return false;
-    }
-
-    public deleteArtist(id: number): boolean;
-    public deleteArtist(name: string): boolean;
-    public deleteArtist(id: number, extra: string): boolean;
-    public deleteArtist(param: number | string, extra?: string): boolean {
-        if (typeof param === "number") {
-            return !!this.db.deleteArtist(param);
-        } else if (typeof param === "string") {
-            const artist = this.db.readArtistByName(param);
-            if (artist) {
-                return !!this.db.deleteArtist(artist.getId());
-            }
-        }
-        return false;
+    async deleteArtist(id: number) {
+        return await this.db.deleteArtist(id);
     }
 }

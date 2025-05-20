@@ -7,7 +7,7 @@ const promise_1 = __importDefault(require("mysql2/promise"));
 const pool = promise_1.default.createPool({
     host: 'localhost',
     user: 'Carlos',
-    password: '',
+    password: '3546',
     database: 'gallerydb',
     waitForConnections: true,
     connectionLimit: 10,

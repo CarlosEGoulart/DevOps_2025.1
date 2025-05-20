@@ -1,36 +1,20 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-const readlineSync = __importStar(require("readline-sync"));
-const EnumType_1 = require("../model/EnumType");
-class ArtistView {
-    constructor(artistController, message) {
+/*
+import * as readlineSync from 'readline-sync';
+import Message from "../model/Message";
+import { MessageType } from "../model/EnumType";
+
+
+export default class ArtistView {
+    private artistController: ArtistController;
+    private message: Message;
+    
+    constructor(artistController: ArtistController, message: Message) {
         this.artistController = artistController;
         this.message = message;
     }
-    start() {
+    
+    public start(): void {
         while (true) {
             console.log("\n--- Gerenciar Artistas ---");
             console.log("1. Listar Artistas");
@@ -39,7 +23,9 @@ class ArtistView {
             console.log("4. Atualizar Artista");
             console.log("5. Deletar Artista");
             console.log("0. Voltar ao Menu Principal");
+            
             const choice = readlineSync.questionInt("Escolha uma opção: ");
+
             switch (choice) {
                 case 1:
                     this.listArtists();
@@ -59,56 +45,56 @@ class ArtistView {
                 case 0:
                     return;
                 default:
-                    this.message.showMessage(EnumType_1.MessageType.Error);
+                    this.message.showMessage(MessageType.Error);
             }
         }
     }
-    listArtists() {
+
+    private listArtists(): void {
         const artists = this.artistController.listArtists();
         if (artists.length === 0) {
-            this.message.showMessage(EnumType_1.MessageType.NotFound);
+            this.message.showMessage(MessageType.NotFound);
             return;
         }
         artists.forEach(artist => {
             console.log(`ID: ${artist.getId()}, Nome: ${artist.getName()}`);
         });
     }
-    viewArtistDetails() {
+
+    private viewArtistDetails(): void {
         const input = readlineSync.question("Digite o ID ou Nome do artista: ");
         let artist;
         if (!isNaN(Number(input))) {
             artist = this.artistController.getArtist(Number(input));
-        }
-        else {
+        } else {
             artist = this.artistController.getArtist(input);
         }
         if (artist) {
             console.log(artist.getInfo());
-        }
-        else {
-            this.message.showMessage(EnumType_1.MessageType.NotFound);
+        } else {
+            this.message.showMessage(MessageType.NotFound);
         }
     }
-    createArtist() {
+
+    private createArtist(): void {
         const name = readlineSync.question("Nome: ");
         const bio = readlineSync.question("Bio: ");
         const birthYear = readlineSync.questionInt("Ano de nascimento: ");
         const instagram = readlineSync.question("Instagram: ");
         const newArtist = this.artistController.createArtist(name, bio, birthYear, instagram);
         if (newArtist) {
-            this.message.showMessage(EnumType_1.MessageType.Success);
-        }
-        else {
-            this.message.showMessage(EnumType_1.MessageType.Error);
+            this.message.showMessage(MessageType.Success);
+        } else {
+            this.message.showMessage(MessageType.Error);
         }
     }
-    updateArtist() {
+
+    private updateArtist(): void {
         const input = readlineSync.question("Digite o ID ou Nome do artista para atualizar: ");
         let artist;
         if (!isNaN(Number(input))) {
             artist = this.artistController.getArtist(Number(input));
-        }
-        else {
+        } else {
             artist = this.artistController.getArtist(input);
         }
         if (artist) {
@@ -116,44 +102,43 @@ class ArtistView {
             const bioPrompt = `Nova bio (${artist.getBio()}): `;
             const birthYearPrompt = `Novo ano de nascimento (${artist.getBirthYear()}): `;
             const instagramPrompt = `Novo Instagram (${artist.getInstagram()}): `;
+
             let newName = readlineSync.question(namePrompt);
-            if (!newName.trim())
-                newName = artist.getName();
+            if (!newName.trim()) newName = artist.getName();
+
             let newBio = readlineSync.question(bioPrompt);
-            if (!newBio.trim())
-                newBio = artist.getBio();
+            if (!newBio.trim()) newBio = artist.getBio();
+
             let newBirthYearInput = readlineSync.question(birthYearPrompt);
             let newBirthYear = newBirthYearInput.trim() ? Number(newBirthYearInput) : artist.getBirthYear();
+
             let newInstagram = readlineSync.question(instagramPrompt);
-            if (!newInstagram.trim())
-                newInstagram = artist.getInstagram();
+            if (!newInstagram.trim()) newInstagram = artist.getInstagram();
+
             const updated = this.artistController.updateArtist(artist.getId(), newName, newBio, newBirthYear, newInstagram);
             if (updated) {
-                this.message.showMessage(EnumType_1.MessageType.Success);
+                this.message.showMessage(MessageType.Success);
+            } else {
+                this.message.showMessage(MessageType.Error);
             }
-            else {
-                this.message.showMessage(EnumType_1.MessageType.Error);
-            }
-        }
-        else {
-            this.message.showMessage(EnumType_1.MessageType.NotFound);
+        } else {
+            this.message.showMessage(MessageType.NotFound);
         }
     }
-    deleteArtist() {
+
+    private deleteArtist(): void {
         const input = readlineSync.question("Digite o ID ou Nome do artista para deletar: ");
         let deleted;
         if (!isNaN(Number(input))) {
             deleted = this.artistController.deleteArtist(Number(input));
-        }
-        else {
+        } else {
             deleted = this.artistController.deleteArtist(input);
         }
         if (deleted) {
-            this.message.showMessage(EnumType_1.MessageType.Success);
-        }
-        else {
-            this.message.showMessage(EnumType_1.MessageType.NotFound);
+            this.message.showMessage(MessageType.Success);
+        } else {
+            this.message.showMessage(MessageType.NotFound);
         }
     }
 }
-exports.default = ArtistView;
+*/ 

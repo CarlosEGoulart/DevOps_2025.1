@@ -1,3 +1,4 @@
+/*
 import ArtController from "../controller/ArtController";
 import * as readlineSync from 'readline-sync';
 import Message from "../model/Message";
@@ -147,3 +148,4 @@ export default class ArtView {
         }
     }
 }
+*/

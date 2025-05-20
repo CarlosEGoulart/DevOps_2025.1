@@ -1,56 +1,42 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 class ArtController {
     constructor(db) {
         this.db = db;
     }
     createArt(title, description, year, imageUrl) {
-        return this.db.createArt(title, description, year, imageUrl);
-    }
-    getArt(param, extra) {
-        if (typeof param === "number") {
-            if (typeof extra === "string") {
-                return this.db.readArt(param);
-            }
-            return this.db.readArt(param);
-        }
-        else if (typeof param === "string") {
-            return this.db.readArtByTitle(param);
-        }
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield this.db.createArt(title, description, year, imageUrl);
+        });
     }
     listArts() {
-        return this.db.readAllArts();
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield this.db.listArts();
+        });
     }
-    updateArt(param, title, description, year) {
-        if (typeof param === "number") {
-            return this.db.updateArt(param, title, description, year);
-        }
-        else if (typeof param === "string") {
-            const art = this.db.readArtByTitle(param);
-            if (art) {
-                return this.db.updateArt(art.getId(), title, description, year);
-            }
-        }
-        return false;
+    getArt(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield this.db.getArt(id);
+        });
     }
-    deleteArt(param) {
-        if (typeof param === "number") {
-            return !!this.db.deleteArt(param);
-        }
-        else if (typeof param === "string") {
-            const art = this.db.readArtByTitle(param);
-            if (art) {
-                return !!this.db.deleteArt(art.getId());
-            }
-        }
-        return false;
+    updateArt(id, title, description, year) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield this.db.updateArt(id, title, description, year);
+        });
     }
-    assignArtistToArt(idArt, idArtist) {
-        const artist = this.db.readArtist(idArtist);
-        if (!artist) {
-            return false;
-        }
-        return this.db.assignArtistToArt(idArt, artist);
+    deleteArt(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield this.db.deleteArt(id);
+        });
     }
 }
 exports.default = ArtController;

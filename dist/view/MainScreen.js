@@ -1,52 +1,36 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-const ArtistView_1 = __importDefault(require("./ArtistView"));
-const ArtView_1 = __importDefault(require("./ArtView"));
-const ExhibitionView_1 = __importDefault(require("./ExhibitionView"));
-const readlineSync = __importStar(require("readline-sync"));
-const Message_1 = __importDefault(require("../model/Message"));
-class MainScreen {
-    constructor(mainController) {
-        this.message = new Message_1.default();
+/*
+import MainController from "../controller/MainController";
+import ArtistView from "./ArtistView";
+import ArtView from "./ArtView";
+import ExhibitionView from "./ExhibitionView";
+import * as readlineSync from 'readline-sync';
+import Message from "../model/Message";
+
+export default class MainScreen {
+    private mainController: MainController;
+    private artistView: ArtistView;
+    private artView: ArtView;
+    private exhibitionView: ExhibitionView;
+    private message: Message = new Message();
+
+    constructor(mainController: MainController) {
         this.mainController = mainController;
-        this.artistView = new ArtistView_1.default(this.mainController.artistController, this.message);
-        this.artView = new ArtView_1.default(this.mainController.artController, this.message);
-        this.exhibitionView = new ExhibitionView_1.default(this.mainController.exhibitionController, this.message);
+        this.artistView = new ArtistView(this.mainController.artistController, this.message);
+        this.artView = new ArtView(this.mainController.artController, this.message);
+        this.exhibitionView = new ExhibitionView(this.mainController.exhibitionController, this.message);
     }
-    start() {
+
+    public start(): void {
         while (true) {
             console.log("\n--- Menu Principal ---");
             console.log("1. Gerenciar Artistas");
             console.log("2. Gerenciar Obras de Arte");
             console.log("3. Gerenciar Exposições");
             console.log("0. Sair");
+
             const choice = readlineSync.questionInt("Escolha uma opção: ");
+
             switch (choice) {
                 case 1:
                     this.artistView.start();
@@ -66,4 +50,4 @@ class MainScreen {
         }
     }
 }
-exports.default = MainScreen;
+*/ 

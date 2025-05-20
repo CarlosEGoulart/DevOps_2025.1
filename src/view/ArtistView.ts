@@ -1,17 +1,18 @@
-import ArtistController from "../controller/ArtistController";
+/*
 import * as readlineSync from 'readline-sync';
 import Message from "../model/Message";
 import { MessageType } from "../model/EnumType";
 
+
 export default class ArtistView {
     private artistController: ArtistController;
     private message: Message;
-
+    
     constructor(artistController: ArtistController, message: Message) {
         this.artistController = artistController;
         this.message = message;
     }
-
+    
     public start(): void {
         while (true) {
             console.log("\n--- Gerenciar Artistas ---");
@@ -21,7 +22,7 @@ export default class ArtistView {
             console.log("4. Atualizar Artista");
             console.log("5. Deletar Artista");
             console.log("0. Voltar ao Menu Principal");
-
+            
             const choice = readlineSync.questionInt("Escolha uma opção: ");
 
             switch (choice) {
@@ -139,3 +140,4 @@ export default class ArtistView {
         }
     }
 }
+*/

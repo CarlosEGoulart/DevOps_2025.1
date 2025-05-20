@@ -1,3 +1,4 @@
+/*
 import MainController from "../controller/MainController";
 import ArtistView from "./ArtistView";
 import ArtView from "./ArtView";
@@ -48,3 +49,4 @@ export default class MainScreen {
         }
     }
 }
+*/

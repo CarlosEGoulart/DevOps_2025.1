@@ -1,156 +1,111 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const Art_1 = __importDefault(require("../model/Art"));
-const Artist_1 = __importDefault(require("../model/Artist"));
-const Exhibition_1 = __importDefault(require("../model/Exhibition"));
+const ConfigMySQL_1 = __importDefault(require("../config/ConfigMySQL"));
 class Database {
-    constructor() {
-        this.ArtDb = [];
-        this.ArtistDb = [];
-        this.ExhibitionDb = [];
-        this.nextArtId = 1;
-        this.nextArtistId = 1;
-        this.nextExhibitionId = 1;
-    }
     // ART CRUD
     createArt(title, description, year, imageUrl) {
-        const newArt = new Art_1.default(this.nextArtId++, title, description, year, imageUrl);
-        this.ArtDb.push(newArt);
-        return newArt;
+        return __awaiter(this, void 0, void 0, function* () {
+            const [result] = yield ConfigMySQL_1.default.execute('INSERT INTO arts (title, description, year, image_url) VALUES (?, ?, ?, ?)', [title, description, year, imageUrl]);
+            return result;
+        });
     }
-    readArt(idArt) {
-        return this.ArtDb.find(art => art.getId() === idArt);
+    listArts() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const [rows] = yield ConfigMySQL_1.default.execute('SELECT * FROM arts');
+            return rows;
+        });
     }
-    readArtByTitle(name) {
-        return this.ArtDb.find(art => art.getName().toLowerCase() === name.toLowerCase());
+    getArt(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const [rows] = yield ConfigMySQL_1.default.execute('SELECT * FROM arts WHERE id = ?', [id]);
+            return Array.isArray(rows) && rows.length > 0 ? rows[0] : null;
+        });
     }
-    readAllArts() {
-        return this.ArtDb;
+    updateArt(id, title, description, year) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const [result] = yield ConfigMySQL_1.default.execute('UPDATE arts SET title = ?, description = ?, year = ? WHERE id = ?', [title, description, year, id]);
+            return result;
+        });
     }
-    updateArt(idArt, title, description, year) {
-        const art = this.readArt(idArt);
-        if (art) {
-            art.setName(title);
-            art.setDescription(description);
-            art.setYear(year);
-            return true;
-        }
-        return false;
-    }
-    deleteArt(idArt) {
-        const index = this.ArtDb.findIndex(art => art.getId() === idArt);
-        if (index !== -1) {
-            this.ArtDb.splice(index, 1);
-            return this.ArtDb;
-        }
-        return undefined;
-    }
-    assignArtistToArt(idArt, artist) {
-        const art = this.readArt(idArt);
-        if (art && artist) {
-            art.setArtist(artist);
-            return true;
-        }
-        return false;
+    deleteArt(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const [result] = yield ConfigMySQL_1.default.execute('DELETE FROM arts WHERE id = ?', [id]);
+            return result;
+        });
     }
     // ARTIST CRUD
     createArtist(name, bio, birthYear, instagram) {
-        const newArtist = new Artist_1.default(this.nextArtistId++, name, bio, birthYear, instagram);
-        this.ArtistDb.push(newArtist);
-        return newArtist;
+        return __awaiter(this, void 0, void 0, function* () {
+            const [result] = yield ConfigMySQL_1.default.execute('INSERT INTO artists (name, bio, birth_year, instagram) VALUES (?, ?, ?, ?)', [name, bio, birthYear, instagram]);
+            return result;
+        });
     }
-    readArtist(idArtist) {
-        return this.ArtistDb.find(artist => artist.getId() === idArtist);
+    listArtists() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const [rows] = yield ConfigMySQL_1.default.execute('SELECT * FROM artists');
+            return rows;
+        });
     }
-    readArtistByName(name) {
-        return this.ArtistDb.find(artist => artist.getName().toLowerCase() === name.toLowerCase());
+    getArtist(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const [rows] = yield ConfigMySQL_1.default.execute('SELECT * FROM artists WHERE id = ?', [id]);
+            return Array.isArray(rows) && rows.length > 0 ? rows[0] : null;
+        });
     }
-    readAllArtists() {
-        return this.ArtistDb;
+    updateArtist(id, name, bio, birthYear, instagram) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const [result] = yield ConfigMySQL_1.default.execute('UPDATE artists SET name = ?, bio = ?, birth_year = ?, instagram = ? WHERE id = ?', [name, bio, birthYear, instagram, id]);
+            return result;
+        });
     }
-    updateArtist(idArtist, name, bio, birthYear, instagram) {
-        const artist = this.readArtist(idArtist);
-        if (artist) {
-            artist.setName(name);
-            artist.setBio(bio);
-            artist.setBirthYear(birthYear);
-            artist.setInstagram(instagram);
-            return true;
-        }
-        return false;
-    }
-    deleteArtist(idArtist) {
-        const index = this.ArtistDb.findIndex(artist => artist.getId() === idArtist);
-        if (index !== -1) {
-            this.ArtistDb.splice(index, 1);
-            return this.ArtistDb;
-        }
-        return undefined;
+    deleteArtist(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const [result] = yield ConfigMySQL_1.default.execute('DELETE FROM artists WHERE id = ?', [id]);
+            return result;
+        });
     }
     // EXHIBITION CRUD
-    createExhibition(name, description, artWorks = []) {
-        const newExhibition = new Exhibition_1.default(this.nextExhibitionId++, name, description, artWorks);
-        this.ExhibitionDb.push(newExhibition);
-        return newExhibition;
+    createExhibition(name, date, location) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const [result] = yield ConfigMySQL_1.default.execute('INSERT INTO exhibitions (name, date, location) VALUES (?, ?, ?)', [name, date, location]);
+            return result;
+        });
     }
-    readExhibition(idExhibition) {
-        return this.ExhibitionDb.find(exh => exh.getId() === idExhibition);
+    listExhibitions() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const [rows] = yield ConfigMySQL_1.default.execute('SELECT * FROM exhibitions');
+            return rows;
+        });
     }
-    readExhibitionByName(name) {
-        return this.ExhibitionDb.find(exh => exh.getName().toLowerCase() === name.toLowerCase());
+    getExhibition(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const [rows] = yield ConfigMySQL_1.default.execute('SELECT * FROM exhibitions WHERE id = ?', [id]);
+            return Array.isArray(rows) && rows.length > 0 ? rows[0] : null;
+        });
     }
-    readAllExhibitions() {
-        return this.ExhibitionDb;
+    updateExhibition(id, name, date, location) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const [result] = yield ConfigMySQL_1.default.execute('UPDATE exhibitions SET name = ?, date = ?, location = ? WHERE id = ?', [name, date, location, id]);
+            return result;
+        });
     }
-    updateExhibition(idExhibition, name, description, artWorks) {
-        const exhibition = this.readExhibition(idExhibition);
-        if (exhibition) {
-            exhibition.setName(name);
-            exhibition.setDescription(description);
-            exhibition.setArtWorks(artWorks);
-            return true;
-        }
-        return false;
-    }
-    deleteExhibition(idExhibition) {
-        const index = this.ExhibitionDb.findIndex(exh => exh.getId() === idExhibition);
-        if (index !== -1) {
-            this.ExhibitionDb.splice(index, 1);
-            return true;
-        }
-        return false;
-    }
-    addArtToExhibition(idExhibition, idArt) {
-        const exhibition = this.readExhibition(idExhibition);
-        const art = this.readArt(idArt);
-        if (exhibition && art) {
-            const currentArtWorks = exhibition.getArtWorks();
-            if (!currentArtWorks.includes(idArt)) {
-                exhibition.setArtWorks([...currentArtWorks, idArt]);
-                return true;
-            }
-        }
-        return false;
-    }
-    removeArtFromExhibition(idExhibition, idArt) {
-        const exhibition = this.readExhibition(idExhibition);
-        if (exhibition) {
-            const updatedArtWorks = exhibition.getArtWorks().filter(id => id !== idArt);
-            exhibition.setArtWorks(updatedArtWorks);
-            return true;
-        }
-        return false;
-    }
-    getExhibitionArts(idExhibition) {
-        const exhibition = this.readExhibition(idExhibition);
-        if (exhibition) {
-            const artIds = exhibition.getArtWorks();
-            return artIds.map(id => this.readArt(id)).filter(art => art !== undefined);
-        }
-        return undefined;
+    deleteExhibition(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const [result] = yield ConfigMySQL_1.default.execute('DELETE FROM exhibitions WHERE id = ?', [id]);
+            return result;
+        });
     }
 }
 exports.default = Database;

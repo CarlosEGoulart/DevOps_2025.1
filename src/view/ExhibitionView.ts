@@ -1,3 +1,4 @@
+/*
 import ExhibitionController from "../controller/ExhibitionController";
 import * as readlineSync from 'readline-sync';
 import Message from "../model/Message";
@@ -175,3 +176,4 @@ export default class ExhibitionView {
         }
     }
 }
+*/

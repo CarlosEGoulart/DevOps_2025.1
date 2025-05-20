@@ -1,49 +1,40 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 class ArtistController {
-    constructor(db) {
-        this.db = db;
-    }
+    constructor(db) { this.db = db; }
     createArtist(name, bio, birthYear, instagram) {
-        return this.db.createArtist(name, bio, birthYear, instagram);
-    }
-    getArtist(param, extra) {
-        if (typeof param === "number") {
-            if (typeof extra === "string") {
-                return this.db.readArtist(param);
-            }
-            return this.db.readArtist(param);
-        }
-        else if (typeof param === "string") {
-            return this.db.readArtistByName(param);
-        }
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield this.db.createArtist(name, bio, birthYear, instagram);
+        });
     }
     listArtists() {
-        return this.db.readAllArtists();
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield this.db.listArtists();
+        });
     }
-    updateArtist(param, name, bio, birthYear, instagram, extra) {
-        if (typeof param === "number") {
-            return this.db.updateArtist(param, name, bio, birthYear, instagram);
-        }
-        else if (typeof param === "string") {
-            const artist = this.db.readArtistByName(param);
-            if (artist) {
-                return this.db.updateArtist(artist.getId(), name, bio, birthYear, instagram);
-            }
-        }
-        return false;
+    getArtist(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield this.db.getArtist(id);
+        });
     }
-    deleteArtist(param, extra) {
-        if (typeof param === "number") {
-            return !!this.db.deleteArtist(param);
-        }
-        else if (typeof param === "string") {
-            const artist = this.db.readArtistByName(param);
-            if (artist) {
-                return !!this.db.deleteArtist(artist.getId());
-            }
-        }
-        return false;
+    updateArtist(id, name, bio, birthYear, instagram) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield this.db.updateArtist(id, name, bio, birthYear, instagram);
+        });
+    }
+    deleteArtist(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield this.db.deleteArtist(id);
+        });
     }
 }
 exports.default = ArtistController;
