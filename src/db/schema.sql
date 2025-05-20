@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS artists (
     instagram VARCHAR(50)
 );
 
-CREATE TABLE IF NOT EXISTS artworks (
+CREATE TABLE IF NOT EXISTS arts (
     id INT PRIMARY KEY AUTO_INCREMENT,
     title VARCHAR(100) NOT NULL,
     description TEXT,
@@ -27,8 +27,8 @@ CREATE TABLE IF NOT EXISTS exhibitions (
 
 CREATE TABLE IF NOT EXISTS exhibition_artworks (
     exhibition_id INT,
-    artwork_id INT,
+    art_id INT,
     FOREIGN KEY (exhibition_id) REFERENCES exhibitions(id),
-    FOREIGN KEY (artwork_id) REFERENCES artworks(id),
-    PRIMARY KEY (exhibition_id, artwork_id)
+    FOREIGN KEY (art_id) REFERENCES arts(id),
+    PRIMARY KEY (exhibition_id, art_id)
 );
