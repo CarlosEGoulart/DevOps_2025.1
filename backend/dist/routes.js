@@ -25,62 +25,6 @@ const db = database_1.default.getInstance();
 const artController = new ArtController_1.default(db);
 const artistController = new ArtistController_1.default(db);
 const exhibitionController = new ExhibitionController_1.default(db);
-// Rotas para Obras de Arte (Arts)
-exports.router.get('/arts', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const arts = yield artController.listArts();
-        res.json(arts);
-    }
-    catch (error) {
-        res.status(500).json({ error: 'Erro ao listar obras de arte' });
-    }
-}));
-exports.router.post('/arts', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const { title, description, year, imageUrl } = req.body;
-        const created = yield artController.createArt(title, description, year, imageUrl);
-        res.status(201).json(created);
-    }
-    catch (error) {
-        res.status(400).json({ error: 'Erro ao criar obra de arte' });
-    }
-}));
-exports.router.get('/arts/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const id = parseInt(req.params.id);
-        const art = yield artController.getArt(id);
-        if (art) {
-            res.json(art);
-        }
-        else {
-            res.status(404).json({ error: 'Obra de arte não encontrada' });
-        }
-    }
-    catch (error) {
-        res.status(500).json({ error: 'Erro ao buscar obra de arte' });
-    }
-}));
-exports.router.put('/arts/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const id = parseInt(req.params.id);
-        const { title, description, year, imageUrl } = req.body;
-        const result = yield artController.updateArt(id, title, description, year, imageUrl);
-        res.json(result);
-    }
-    catch (error) {
-        res.status(400).json({ error: 'Erro ao atualizar obra de arte' });
-    }
-}));
-exports.router.delete('/arts/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const id = parseInt(req.params.id);
-        const result = yield artController.deleteArt(id);
-        res.json(result);
-    }
-    catch (error) {
-        res.status(500).json({ error: 'Erro ao excluir obra de arte' });
-    }
-}));
 // Rotas para Artistas (Artists)
 exports.router.get('/artists', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -88,16 +32,18 @@ exports.router.get('/artists', (req, res) => __awaiter(void 0, void 0, void 0, f
         res.json(artists);
     }
     catch (error) {
+        console.error('Erro ao listar artistas:', error);
         res.status(500).json({ error: 'Erro ao listar artistas' });
     }
 }));
 exports.router.post('/artists', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { name, bio, birthYear, instagram } = req.body;
-        const created = yield artistController.createArtist(name, bio, birthYear, instagram);
+        const { name, bio, year, instagram } = req.body;
+        const created = yield artistController.createArtist(name, bio, year, instagram);
         res.status(201).json(created);
     }
     catch (error) {
+        console.error('Erro ao criar artista:', error);
         res.status(400).json({ error: 'Erro ao criar artista' });
     }
 }));
@@ -113,17 +59,19 @@ exports.router.get('/artists/:id', (req, res) => __awaiter(void 0, void 0, void 
         }
     }
     catch (error) {
+        console.error('Erro ao buscar artista:', error);
         res.status(500).json({ error: 'Erro ao buscar artista' });
     }
 }));
 exports.router.put('/artists/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const id = parseInt(req.params.id);
-        const { name, bio, birthYear, instagram } = req.body;
-        const result = yield artistController.updateArtist(id, name, bio, birthYear, instagram);
+        const { name, bio, year, instagram } = req.body;
+        const result = yield artistController.updateArtist(id, name, bio, year, instagram);
         res.json(result);
     }
     catch (error) {
+        console.error('Erro ao atualizar artista:', error);
         res.status(400).json({ error: 'Erro ao atualizar artista' });
     }
 }));
@@ -134,7 +82,80 @@ exports.router.delete('/artists/:id', (req, res) => __awaiter(void 0, void 0, vo
         res.json(result);
     }
     catch (error) {
+        console.error('Erro ao excluir artista:', error);
         res.status(500).json({ error: 'Erro ao excluir artista' });
+    }
+}));
+// Rotas para Obras de Arte (Arts)
+exports.router.get('/arts', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const arts = yield artController.listArts();
+        res.json(arts);
+    }
+    catch (error) {
+        console.error('Erro ao listar obras de arte:', error);
+        res.status(500).json({ error: 'Erro ao listar obras de arte' });
+    }
+}));
+exports.router.post('/arts', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { title, description, year, urlImage, artistId } = req.body;
+        const created = yield artController.createArt(title, description, year, urlImage, artistId);
+        res.status(201).json(created);
+    }
+    catch (error) {
+        console.error('Erro ao criar obra de arte:', error);
+        res.status(400).json({ error: 'Erro ao criar obra de arte' });
+    }
+}));
+exports.router.get('/arts/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const id = parseInt(req.params.id);
+        const art = yield artController.getArt(id);
+        if (art) {
+            res.json(art);
+        }
+        else {
+            res.status(404).json({ error: 'Obra de arte não encontrada' });
+        }
+    }
+    catch (error) {
+        console.error('Erro ao buscar obra de arte:', error);
+        res.status(500).json({ error: 'Erro ao buscar obra de arte' });
+    }
+}));
+exports.router.put('/arts/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const id = parseInt(req.params.id);
+        const { title, description, year, urlImage, artistId } = req.body;
+        const result = yield artController.updateArt(id, title, description, year, urlImage, artistId);
+        res.json(result);
+    }
+    catch (error) {
+        console.error('Erro ao atualizar obra de arte:', error);
+        res.status(400).json({ error: 'Erro ao atualizar obra de arte' });
+    }
+}));
+exports.router.delete('/arts/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const id = parseInt(req.params.id);
+        const result = yield artController.deleteArt(id);
+        res.json(result);
+    }
+    catch (error) {
+        console.error('Erro ao excluir obra de arte:', error);
+        res.status(500).json({ error: 'Erro ao excluir obra de arte' });
+    }
+}));
+exports.router.get('/artists/:id/arts', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const artistId = parseInt(req.params.id);
+        const arts = yield artController.listArtsByArtist(artistId);
+        res.json(arts);
+    }
+    catch (error) {
+        console.error('Erro ao listar obras do artista:', error);
+        res.status(500).json({ error: 'Erro ao listar obras do artista' });
     }
 }));
 // Rotas para Exposições (Exhibitions)
@@ -144,16 +165,18 @@ exports.router.get('/exhibitions', (req, res) => __awaiter(void 0, void 0, void 
         res.json(exhibitions);
     }
     catch (error) {
+        console.error('Erro ao listar exposições:', error);
         res.status(500).json({ error: 'Erro ao listar exposições' });
     }
 }));
 exports.router.post('/exhibitions', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { name, date, location, description } = req.body;
-        const created = yield exhibitionController.createExhibition(name, date, location, description);
+        const { name, description } = req.body;
+        const created = yield exhibitionController.createExhibition(name, description);
         res.status(201).json(created);
     }
     catch (error) {
+        console.error('Erro ao criar exposição:', error);
         res.status(400).json({ error: 'Erro ao criar exposição' });
     }
 }));
@@ -169,17 +192,19 @@ exports.router.get('/exhibitions/:id', (req, res) => __awaiter(void 0, void 0, v
         }
     }
     catch (error) {
+        console.error('Erro ao buscar exposição:', error);
         res.status(500).json({ error: 'Erro ao buscar exposição' });
     }
 }));
 exports.router.put('/exhibitions/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const id = parseInt(req.params.id);
-        const { name, date, location, description } = req.body;
-        const result = yield exhibitionController.updateExhibition(id, name, date, location, description);
+        const { name, description } = req.body;
+        const result = yield exhibitionController.updateExhibition(id, name, description);
         res.json(result);
     }
     catch (error) {
+        console.error('Erro ao atualizar exposição:', error);
         res.status(400).json({ error: 'Erro ao atualizar exposição' });
     }
 }));
@@ -190,6 +215,43 @@ exports.router.delete('/exhibitions/:id', (req, res) => __awaiter(void 0, void 0
         res.json(result);
     }
     catch (error) {
+        console.error('Erro ao excluir exposição:', error);
         res.status(500).json({ error: 'Erro ao excluir exposição' });
+    }
+}));
+// Rotas para relacionamento entre Exposições e Obras de Arte
+exports.router.get('/exhibitions/:id/arts', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const exhibitionId = parseInt(req.params.id);
+        const arts = yield exhibitionController.listArtsByExhibition(exhibitionId);
+        res.json(arts);
+    }
+    catch (error) {
+        console.error('Erro ao listar obras da exposição:', error);
+        res.status(500).json({ error: 'Erro ao listar obras da exposição' });
+    }
+}));
+exports.router.post('/exhibitions/:exhibitionId/arts/:artId', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const exhibitionId = parseInt(req.params.exhibitionId);
+        const artId = parseInt(req.params.artId);
+        const result = yield exhibitionController.addArtToExhibition(exhibitionId, artId);
+        res.status(201).json(result);
+    }
+    catch (error) {
+        console.error('Erro ao adicionar obra à exposição:', error);
+        res.status(400).json({ error: 'Erro ao adicionar obra à exposição' });
+    }
+}));
+exports.router.delete('/exhibitions/:exhibitionId/arts/:artId', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const exhibitionId = parseInt(req.params.exhibitionId);
+        const artId = parseInt(req.params.artId);
+        const result = yield exhibitionController.removeArtFromExhibition(exhibitionId, artId);
+        res.json(result);
+    }
+    catch (error) {
+        console.error('Erro ao remover obra da exposição:', error);
+        res.status(500).json({ error: 'Erro ao remover obra da exposição' });
     }
 }));

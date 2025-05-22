@@ -42,7 +42,7 @@ async function createArtist() {
     try {
         const name = document.getElementById('artist-name').value;
         const bio = document.getElementById('artist-bio').value;
-        const birthYear = parseInt(document.getElementById('artist-birth-year').value);
+        const year = parseInt(document.getElementById('artist-year').value);
         const instagram = document.getElementById('artist-instagram').value;
         
         const response = await fetch('/api/artists', {
@@ -53,7 +53,7 @@ async function createArtist() {
             body: JSON.stringify({
                 name,
                 bio,
-                birthYear,
+                year,
                 instagram
             })
         });
@@ -79,7 +79,7 @@ async function createArtwork() {
         const title = document.getElementById('artwork-title').value;
         const description = document.getElementById('artwork-description').value;
         const year = parseInt(document.getElementById('artwork-year').value);
-        const imageUrl = document.getElementById('artwork-url').value;
+        const urlImage = document.getElementById('artwork-url').value;
         
         const response = await fetch('/api/arts', {
             method: 'POST',
@@ -90,7 +90,7 @@ async function createArtwork() {
                 title,
                 description,
                 year,
-                imageUrl
+                urlImage
             })
         });
         
@@ -113,8 +113,6 @@ async function createArtwork() {
 async function createExhibition() {
     try {
         const name = document.getElementById('exhibition-name').value;
-        const date = document.getElementById('exhibition-date').value;
-        const location = document.getElementById('exhibition-location').value;
         const description = document.getElementById('exhibition-description').value;
         
         const response = await fetch('/api/exhibitions', {
@@ -124,8 +122,6 @@ async function createExhibition() {
             },
             body: JSON.stringify({
                 name,
-                date,
-                location,
                 description
             })
         });

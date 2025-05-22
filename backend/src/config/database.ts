@@ -1,20 +1,26 @@
-// Arquivo de configuração do banco de dados SQLite
-import sqlite3 from 'sqlite3';
-import { open } from 'sqlite';
-import path from 'path';
+// Arquivo de configuração do banco de dados MySQL
+import mysql from 'mysql2/promise';
 import dotenv from 'dotenv';
 
 // Carrega as variáveis de ambiente
 dotenv.config();
 
-// Caminho do banco de dados
-const dbPath = process.env.DB_PATH || './database.sqlite';
-
 class Database {
   private static instance: Database;
-  private db: any = null;
+  private pool: mysql.Pool;
 
-  private constructor() {}
+  private constructor() {
+    this.pool = mysql.createPool({
+      host: process.env.DB_HOST || 'localhost',
+      port: parseInt(process.env.DB_PORT || '3306'),
+      user: process.env.DB_USER || 'root',
+      password: process.env.DB_PASSWORD || '',
+      database: process.env.DB_NAME || 'galeria_arte',
+      waitForConnections: true,
+      connectionLimit: 10,
+      queueLimit: 0
+    });
+  }
 
   public static getInstance(): Database {
     if (!Database.instance) {
@@ -23,59 +29,51 @@ class Database {
     return Database.instance;
   }
 
-  public async connect() {
+  public async query(sql: string, params: any[] = []): Promise<any> {
     try {
-      this.db = await open({
-        filename: dbPath,
-        driver: sqlite3.Database
-      });
-      
-      console.log('Conexão com o banco de dados estabelecida.');
-      return true;
-    } catch (error) {
-      console.error('Erro ao conectar ao banco de dados:', error);
-      return false;
-    }
-  }
-
-  public async query(sql: string, params: any[] = []) {
-    try {
-      return await this.db.all(sql, params);
+      const [results] = await this.pool.execute(sql, params);
+      return results;
     } catch (error) {
       console.error('Erro na consulta SQL:', error);
       throw error;
     }
   }
 
-  public async get(sql: string, params: any[] = []) {
+  public async getConnection(): Promise<mysql.PoolConnection> {
     try {
-      return await this.db.get(sql, params);
+      return await this.pool.getConnection();
     } catch (error) {
-      console.error('Erro na consulta SQL (get):', error);
+      console.error('Erro ao obter conexão:', error);
       throw error;
     }
   }
 
-  public async run(sql: string, params: any[] = []) {
+  public async testConnection(): Promise<boolean> {
     try {
-      return await this.db.run(sql, params);
+      const connection = await this.pool.getConnection();
+      connection.release();
+      console.log('Conexão com o banco de dados MySQL estabelecida com sucesso.');
+      return true;
     } catch (error) {
-      console.error('Erro na execução SQL:', error);
-      throw error;
+      console.error('Erro ao conectar ao banco de dados MySQL:', error);
+      return false;
     }
   }
 
-  public async close() {
-    if (this.db) {
-      await this.db.close();
-      console.log('Conexão com o banco de dados fechada.');
+  public async close(): Promise<void> {
+    try {
+      await this.pool.end();
+      console.log('Conexão com o banco de dados MySQL fechada.');
+    } catch (error) {
+      console.error('Erro ao fechar conexão com o banco de dados:', error);
+      throw error;
     }
   }
 }
 
-export async function initDatabase() {
+export async function initDatabase(): Promise<boolean> {
   const db = Database.getInstance();
-  return await db.connect();
+  return await db.testConnection();
 }
 
 export default Database;

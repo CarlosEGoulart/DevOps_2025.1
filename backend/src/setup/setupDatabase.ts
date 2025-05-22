@@ -1,133 +1,85 @@
-// Script de configuração do banco de dados SQLite
+// Script de configuração do banco de dados MySQL
+import mysql from 'mysql2/promise';
 import fs from 'fs';
 import path from 'path';
-import sqlite3 from 'sqlite3';
 import dotenv from 'dotenv';
 
 // Carrega as variáveis de ambiente
 dotenv.config();
 
-// Caminho do banco de dados
-const dbPath = process.env.DB_PATH || './database.sqlite';
-
-// Verifica se o arquivo do banco de dados já existe
-const dbExists = fs.existsSync(dbPath);
-
-// Cria o diretório se não existir
-const dbDir = path.dirname(dbPath);
-if (!fs.existsSync(dbDir)) {
-  fs.mkdirSync(dbDir, { recursive: true });
+async function setupDatabase() {
+  console.log('Iniciando configuração do banco de dados MySQL...');
+  
+  // Configurações de conexão
+  const config = {
+    host: process.env.DB_HOST || 'localhost',
+    port: parseInt(process.env.DB_PORT || '3306'),
+    user: process.env.DB_USER || 'root',
+    password: process.env.DB_PASSWORD || '',
+    multipleStatements: true
+  };
+  
+  try {
+    // Conectar ao MySQL (sem selecionar um banco específico)
+    const connection = await mysql.createConnection(config);
+    
+    // Nome do banco de dados
+    const dbName = process.env.DB_NAME || 'galeria_arte';
+    
+    // Criar o banco de dados se não existir
+    console.log(`Criando banco de dados ${dbName} se não existir...`);
+    await connection.query(`CREATE DATABASE IF NOT EXISTS ${dbName} CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci`);
+    
+    // Usar o banco de dados
+    console.log(`Usando banco de dados ${dbName}...`);
+    await connection.query(`USE ${dbName}`);
+    
+    // Ler o arquivo SQL para criar as tabelas
+    const createTablesSqlPath = path.join(__dirname, 'sql', 'create-tables.sql');
+    const createTablesSql = fs.readFileSync(createTablesSqlPath, 'utf8');
+    
+    // Executar o script para criar as tabelas
+    console.log('Criando tabelas...');
+    await connection.query(createTablesSql);
+    
+    // Verificar se já existem dados
+    const [rows] = await connection.query('SELECT COUNT(*) as count FROM artist');
+    const count = (rows as any)[0].count;
+    
+    // Se não houver dados, inserir dados iniciais
+    if (count === 0) {
+      console.log('Inserindo dados iniciais...');
+      const seedDataSqlPath = path.join(__dirname, 'sql', 'seed-data.sql');
+      const seedDataSql = fs.readFileSync(seedDataSqlPath, 'utf8');
+      await connection.query(seedDataSql);
+      console.log('Dados iniciais inseridos com sucesso!');
+    } else {
+      console.log('Banco de dados já possui dados, pulando a inserção de dados iniciais.');
+    }
+    
+    // Fechar a conexão
+    await connection.end();
+    
+    console.log('Configuração do banco de dados MySQL concluída com sucesso!');
+    return true;
+  } catch (error) {
+    console.error('Erro durante a configuração do banco de dados:', error);
+    return false;
+  }
 }
 
-// Conecta ao banco de dados
-const db = new sqlite3.Database(dbPath);
-
-// Script SQL para criar as tabelas
-const createTablesSQL = `
--- Tabela de Artistas
-CREATE TABLE IF NOT EXISTS artists (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  name TEXT NOT NULL,
-  bio TEXT,
-  birth_year INTEGER,
-  instagram TEXT,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- Tabela de Obras de Arte
-CREATE TABLE IF NOT EXISTS arts (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  title TEXT NOT NULL,
-  description TEXT,
-  year INTEGER,
-  image_url TEXT,
-  artist_id INTEGER,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (artist_id) REFERENCES artists (id)
-);
-
--- Tabela de Exposições
-CREATE TABLE IF NOT EXISTS exhibitions (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  name TEXT NOT NULL,
-  date TEXT,
-  location TEXT,
-  description TEXT,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- Tabela de relação entre Obras e Exposições
-CREATE TABLE IF NOT EXISTS exhibition_arts (
-  exhibition_id INTEGER,
-  art_id INTEGER,
-  PRIMARY KEY (exhibition_id, art_id),
-  FOREIGN KEY (exhibition_id) REFERENCES exhibitions (id),
-  FOREIGN KEY (art_id) REFERENCES arts (id)
-);
-`;
-
-// Dados iniciais para popular o banco
-const seedDataSQL = `
--- Inserir artistas
-INSERT INTO artists (name, bio, birth_year, instagram) VALUES 
-('Pablo Picasso', 'Artista espanhol, fundador do cubismo', 1881, '@picasso_legacy'),
-('Frida Kahlo', 'Pintora mexicana conhecida por seus autorretratos', 1907, '@frida_kahlo_foundation'),
-('Salvador Dalí', 'Mestre do surrealismo', 1904, '@dali_universe');
-
--- Inserir obras de arte
-INSERT INTO arts (title, description, year, image_url, artist_id) VALUES 
-('Guernica', 'Obra-prima que retrata os horrores da Guerra Civil Espanhola', 1937, 'https://upload.wikimedia.org/wikipedia/en/7/74/PicassoGuernica.jpg', 1),
-('As Duas Fridas', 'Autorretrato duplo de Frida Kahlo', 1939, 'https://upload.wikimedia.org/wikipedia/en/8/8f/The_Two_Fridas.jpg', 2),
-('A Persistência da Memória', 'Famosa obra surrealista com relógios derretidos', 1931, 'https://upload.wikimedia.org/wikipedia/en/d/dd/The_Persistence_of_Memory.jpg', 3);
-
--- Inserir exposições
-INSERT INTO exhibitions (name, date, location, description) VALUES 
-('Modernismo Europeu', '2025-06-15', 'Museu de Arte Moderna', 'Exposição sobre o movimento modernista na Europa'),
-('Arte Latino-Americana', '2025-07-20', 'Galeria Nacional', 'Celebração da arte e cultura latino-americana'),
-('Surrealismo e Além', '2025-08-10', 'Centro Cultural', 'Explorando o movimento surrealista e seu legado');
-
--- Relacionar obras e exposições
-INSERT INTO exhibition_arts (exhibition_id, art_id) VALUES 
-(1, 1), -- Guernica na exposição Modernismo Europeu
-(2, 2), -- As Duas Fridas na exposição Arte Latino-Americana
-(3, 3); -- A Persistência da Memória na exposição Surrealismo e Além
-`;
-
-console.log('Configurando o banco de dados...');
-
-// Executa o script para criar as tabelas
-db.exec(createTablesSQL, (err) => {
-  if (err) {
-    console.error('Erro ao criar tabelas:', err.message);
+// Executar a configuração
+setupDatabase()
+  .then(success => {
+    if (success) {
+      console.log('Banco de dados configurado com sucesso!');
+      process.exit(0);
+    } else {
+      console.error('Falha na configuração do banco de dados.');
+      process.exit(1);
+    }
+  })
+  .catch(error => {
+    console.error('Erro não tratado:', error);
     process.exit(1);
-  }
-  
-  console.log('Tabelas criadas com sucesso!');
-  
-  // Se o banco de dados não existia antes, popula com dados iniciais
-  if (!dbExists) {
-    console.log('Populando o banco de dados com dados iniciais...');
-    
-    db.exec(seedDataSQL, (err) => {
-      if (err) {
-        console.error('Erro ao popular o banco de dados:', err.message);
-        process.exit(1);
-      }
-      
-      console.log('Dados iniciais inseridos com sucesso!');
-      console.log('Configuração do banco de dados concluída.');
-      
-      // Fecha a conexão com o banco de dados
-      db.close();
-    });
-  } else {
-    console.log('Banco de dados já existente, pulando a inserção de dados iniciais.');
-    console.log('Configuração do banco de dados concluída.');
-    
-    // Fecha a conexão com o banco de dados
-    db.close();
-  }
-});
+  });

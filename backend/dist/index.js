@@ -25,7 +25,7 @@ function startServer() {
             // Inicializa o banco de dados
             const dbInitialized = yield (0, database_1.initDatabase)();
             if (!dbInitialized) {
-                console.error('Falha ao inicializar o banco de dados. Verifique a configuração e tente novamente.');
+                console.error('Falha ao inicializar o banco de dados MySQL. Verifique a configuração e tente novamente.');
                 process.exit(1);
             }
             // Cria e configura o servidor Express
@@ -36,7 +36,7 @@ function startServer() {
             // Inicia o servidor
             app.listen(PORT, () => {
                 console.log(`Servidor rodando em http://localhost:${PORT}`);
-                console.log('Banco de dados conectado e inicializado');
+                console.log('Banco de dados MySQL conectado e inicializado');
             });
         }
         catch (error) {

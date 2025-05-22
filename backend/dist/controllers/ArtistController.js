@@ -17,55 +17,56 @@ class ArtistController {
     // Listar todos os artistas
     listArtists() {
         return __awaiter(this, void 0, void 0, function* () {
-            const sql = `SELECT * FROM artists ORDER BY name`;
+            const sql = `SELECT * FROM artist ORDER BY name`;
             return yield this.db.query(sql);
         });
     }
     // Buscar artista por ID
     getArtist(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            const sql = `SELECT * FROM artists WHERE id = ?`;
-            return yield this.db.get(sql, [id]);
+            const sql = `SELECT * FROM artist WHERE artist_id = ?`;
+            const results = yield this.db.query(sql, [id]);
+            return results.length > 0 ? results[0] : null;
         });
     }
     // Criar novo artista
-    createArtist(name, bio, birthYear, instagram) {
+    createArtist(name, bio, year, instagram) {
         return __awaiter(this, void 0, void 0, function* () {
             const sql = `
-      INSERT INTO artists (name, bio, birth_year, instagram)
+      INSERT INTO artist (name, bio, year, instagram)
       VALUES (?, ?, ?, ?)
     `;
-            const result = yield this.db.run(sql, [name, bio, birthYear, instagram]);
+            const result = yield this.db.query(sql, [name, bio, year, instagram]);
             return {
-                id: result.lastID,
+                artist_id: result.insertId,
                 name,
                 bio,
-                birth_year: birthYear,
+                year,
                 instagram
             };
         });
     }
     // Atualizar artista existente
-    updateArtist(id, name, bio, birthYear, instagram) {
+    updateArtist(id, name, bio, year, instagram) {
         return __awaiter(this, void 0, void 0, function* () {
             const sql = `
-      UPDATE artists
-      SET name = ?, bio = ?, birth_year = ?, instagram = ?, updated_at = CURRENT_TIMESTAMP
-      WHERE id = ?
+      UPDATE artist
+      SET name = ?, bio = ?, year = ?, instagram = ?
+      WHERE artist_id = ?
     `;
-            const result = yield this.db.run(sql, [name, bio, birthYear, instagram, id]);
+            const result = yield this.db.query(sql, [name, bio, year, instagram, id]);
             return {
-                success: result.changes > 0
+                success: result.affectedRows > 0
             };
         });
     }
     // Excluir artista
     deleteArtist(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            const sql = `DELETE FROM artists WHERE id = ?`;
-            const result = yield this.db.run(sql, [id]);
+            const sql = `DELETE FROM artist WHERE artist_id = ?`;
+            const result = yield this.db.query(sql, [id]);
             return {
-                success: result.changes > 0
+                success: result.affectedRows > 0
             };
         });
     }

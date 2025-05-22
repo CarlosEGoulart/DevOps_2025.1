@@ -46,11 +46,11 @@ function renderArtists(artists) {
             <div class="card-content">
                 <h3 class="card-title">${artist.name}</h3>
                 <p class="card-text">${artist.bio || 'Sem biografia'}</p>
-                <p class="card-text">Nascimento: ${artist.birth_year}</p>
+                <p class="card-text">Nascimento: ${artist.year}</p>
                 <p class="card-text">Instagram: ${artist.instagram || 'Não informado'}</p>
                 <div class="card-actions">
-                    <button class="btn-edit" data-id="${artist.id}" data-type="artist">Editar</button>
-                    <button class="btn-delete" data-id="${artist.id}" data-type="artist">Excluir</button>
+                    <button class="btn-edit" data-id="${artist.artist_id}" data-type="artist">Editar</button>
+                    <button class="btn-delete" data-id="${artist.artist_id}" data-type="artist">Excluir</button>
                 </div>
             </div>
         `;
@@ -60,7 +60,7 @@ function renderArtists(artists) {
         const deleteBtn = card.querySelector('.btn-delete');
         
         editBtn.addEventListener('click', () => openEditModal('artist', artist));
-        deleteBtn.addEventListener('click', () => confirmDelete('artist', artist.id, artist.name));
+        deleteBtn.addEventListener('click', () => confirmDelete('artist', artist.artist_id, artist.name));
         
         grid.appendChild(card);
     });
@@ -78,7 +78,7 @@ function renderArtworks(artworks) {
         card.className = 'card';
         
         // Verificar se há URL de imagem
-        const imageUrl = artwork.image_url || 'https://via.placeholder.com/300x200?text=Sem+Imagem';
+        const imageUrl = artwork.url_image || 'https://via.placeholder.com/300x200?text=Sem+Imagem';
         
         card.innerHTML = `
             <div class="card-image" style="background-image: url('${imageUrl}')"></div>
@@ -86,9 +86,10 @@ function renderArtworks(artworks) {
                 <h3 class="card-title">${artwork.title}</h3>
                 <p class="card-text">${artwork.description || 'Sem descrição'}</p>
                 <p class="card-text">Ano: ${artwork.year}</p>
+                <p class="card-text">Artista: ${artwork.artist_name || 'Desconhecido'}</p>
                 <div class="card-actions">
-                    <button class="btn-edit" data-id="${artwork.id}" data-type="artwork">Editar</button>
-                    <button class="btn-delete" data-id="${artwork.id}" data-type="artwork">Excluir</button>
+                    <button class="btn-edit" data-id="${artwork.art_id}" data-type="artwork">Editar</button>
+                    <button class="btn-delete" data-id="${artwork.art_id}" data-type="artwork">Excluir</button>
                 </div>
             </div>
         `;
@@ -98,7 +99,7 @@ function renderArtworks(artworks) {
         const deleteBtn = card.querySelector('.btn-delete');
         
         editBtn.addEventListener('click', () => openEditModal('artwork', artwork));
-        deleteBtn.addEventListener('click', () => confirmDelete('artwork', artwork.id, artwork.title));
+        deleteBtn.addEventListener('click', () => confirmDelete('artwork', artwork.art_id, artwork.title));
         
         grid.appendChild(card);
     });
@@ -118,11 +119,9 @@ function renderExhibitions(exhibitions) {
             <div class="card-content">
                 <h3 class="card-title">${exhibition.name}</h3>
                 <p class="card-text">${exhibition.description || 'Sem descrição'}</p>
-                <p class="card-text">Data: ${formatDate(exhibition.date)}</p>
-                <p class="card-text">Local: ${exhibition.location}</p>
                 <div class="card-actions">
-                    <button class="btn-edit" data-id="${exhibition.id}" data-type="exhibition">Editar</button>
-                    <button class="btn-delete" data-id="${exhibition.id}" data-type="exhibition">Excluir</button>
+                    <button class="btn-edit" data-id="${exhibition.exhibition_id}" data-type="exhibition">Editar</button>
+                    <button class="btn-delete" data-id="${exhibition.exhibition_id}" data-type="exhibition">Excluir</button>
                 </div>
             </div>
         `;
@@ -132,7 +131,7 @@ function renderExhibitions(exhibitions) {
         const deleteBtn = card.querySelector('.btn-delete');
         
         editBtn.addEventListener('click', () => openEditModal('exhibition', exhibition));
-        deleteBtn.addEventListener('click', () => confirmDelete('exhibition', exhibition.id, exhibition.name));
+        deleteBtn.addEventListener('click', () => confirmDelete('exhibition', exhibition.exhibition_id, exhibition.name));
         
         grid.appendChild(card);
     });
@@ -148,26 +147,24 @@ function openEditModal(type, item) {
     
     switch (type) {
         case 'artist':
-            document.getElementById('edit-artist-id').value = item.id;
+            document.getElementById('edit-artist-id').value = item.artist_id;
             document.getElementById('edit-artist-name').value = item.name;
             document.getElementById('edit-artist-bio').value = item.bio || '';
-            document.getElementById('edit-artist-birth-year').value = item.birth_year;
+            document.getElementById('edit-artist-year').value = item.year;
             document.getElementById('edit-artist-instagram').value = item.instagram || '';
             break;
             
         case 'artwork':
-            document.getElementById('edit-artwork-id').value = item.id;
+            document.getElementById('edit-artwork-id').value = item.art_id;
             document.getElementById('edit-artwork-title').value = item.title;
             document.getElementById('edit-artwork-description').value = item.description || '';
             document.getElementById('edit-artwork-year').value = item.year;
-            document.getElementById('edit-artwork-url').value = item.image_url || '';
+            document.getElementById('edit-artwork-url').value = item.url_image || '';
             break;
             
         case 'exhibition':
-            document.getElementById('edit-exhibition-id').value = item.id;
+            document.getElementById('edit-exhibition-id').value = item.exhibition_id;
             document.getElementById('edit-exhibition-name').value = item.name;
-            document.getElementById('edit-exhibition-date').value = formatDateForInput(item.date);
-            document.getElementById('edit-exhibition-location').value = item.location;
             document.getElementById('edit-exhibition-description').value = item.description || '';
             break;
     }
@@ -193,7 +190,7 @@ async function saveItem(type) {
                 data = {
                     name: document.getElementById('edit-artist-name').value,
                     bio: document.getElementById('edit-artist-bio').value,
-                    birthYear: parseInt(document.getElementById('edit-artist-birth-year').value),
+                    year: parseInt(document.getElementById('edit-artist-year').value),
                     instagram: document.getElementById('edit-artist-instagram').value
                 };
                 endpoint = `/api/artists/${id}`;
@@ -205,7 +202,7 @@ async function saveItem(type) {
                     title: document.getElementById('edit-artwork-title').value,
                     description: document.getElementById('edit-artwork-description').value,
                     year: parseInt(document.getElementById('edit-artwork-year').value),
-                    imageUrl: document.getElementById('edit-artwork-url').value
+                    urlImage: document.getElementById('edit-artwork-url').value
                 };
                 endpoint = `/api/arts/${id}`;
                 break;
@@ -214,8 +211,6 @@ async function saveItem(type) {
                 id = document.getElementById('edit-exhibition-id').value;
                 data = {
                     name: document.getElementById('edit-exhibition-name').value,
-                    date: document.getElementById('edit-exhibition-date').value,
-                    location: document.getElementById('edit-exhibition-location').value,
                     description: document.getElementById('edit-exhibition-description').value
                 };
                 endpoint = `/api/exhibitions/${id}`;
@@ -343,20 +338,4 @@ function showNotification(type, message) {
     setTimeout(() => {
         notification.classList.remove('active');
     }, 3000);
-}
-
-// Função auxiliar para formatar data
-function formatDate(dateString) {
-    if (!dateString) return 'Data não definida';
-    
-    const date = new Date(dateString);
-    return date.toLocaleDateString('pt-BR');
-}
-
-// Função auxiliar para formatar data para input
-function formatDateForInput(dateString) {
-    if (!dateString) return '';
-    
-    const date = new Date(dateString);
-    return date.toISOString().split('T')[0];
 }

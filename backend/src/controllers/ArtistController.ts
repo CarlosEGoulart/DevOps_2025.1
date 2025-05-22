@@ -1,9 +1,9 @@
 // Modelo para Artista
 export interface Artist {
-  id?: number;
+  artist_id?: number;
   name: string;
   bio?: string;
-  birth_year: number;
+  year: number;
   instagram?: string;
   created_at?: string;
   updated_at?: string;
@@ -19,56 +19,57 @@ export default class ArtistController {
 
   // Listar todos os artistas
   async listArtists(): Promise<Artist[]> {
-    const sql = `SELECT * FROM artists ORDER BY name`;
+    const sql = `SELECT * FROM artist ORDER BY name`;
     return await this.db.query(sql);
   }
 
   // Buscar artista por ID
   async getArtist(id: number): Promise<Artist | null> {
-    const sql = `SELECT * FROM artists WHERE id = ?`;
-    return await this.db.get(sql, [id]);
+    const sql = `SELECT * FROM artist WHERE artist_id = ?`;
+    const results = await this.db.query(sql, [id]);
+    return results.length > 0 ? results[0] : null;
   }
 
   // Criar novo artista
-  async createArtist(name: string, bio: string, birthYear: number, instagram: string): Promise<Artist> {
+  async createArtist(name: string, bio: string, year: number, instagram: string): Promise<Artist> {
     const sql = `
-      INSERT INTO artists (name, bio, birth_year, instagram)
+      INSERT INTO artist (name, bio, year, instagram)
       VALUES (?, ?, ?, ?)
     `;
     
-    const result = await this.db.run(sql, [name, bio, birthYear, instagram]);
+    const result = await this.db.query(sql, [name, bio, year, instagram]);
     
     return {
-      id: result.lastID,
+      artist_id: result.insertId,
       name,
       bio,
-      birth_year: birthYear,
+      year,
       instagram
     };
   }
 
   // Atualizar artista existente
-  async updateArtist(id: number, name: string, bio: string, birthYear: number, instagram: string): Promise<{ success: boolean }> {
+  async updateArtist(id: number, name: string, bio: string, year: number, instagram: string): Promise<{ success: boolean }> {
     const sql = `
-      UPDATE artists
-      SET name = ?, bio = ?, birth_year = ?, instagram = ?, updated_at = CURRENT_TIMESTAMP
-      WHERE id = ?
+      UPDATE artist
+      SET name = ?, bio = ?, year = ?, instagram = ?
+      WHERE artist_id = ?
     `;
     
-    const result = await this.db.run(sql, [name, bio, birthYear, instagram, id]);
+    const result = await this.db.query(sql, [name, bio, year, instagram, id]);
     
     return {
-      success: result.changes > 0
+      success: result.affectedRows > 0
     };
   }
 
   // Excluir artista
   async deleteArtist(id: number): Promise<{ success: boolean }> {
-    const sql = `DELETE FROM artists WHERE id = ?`;
-    const result = await this.db.run(sql, [id]);
+    const sql = `DELETE FROM artist WHERE artist_id = ?`;
+    const result = await this.db.query(sql, [id]);
     
     return {
-      success: result.changes > 0
+      success: result.affectedRows > 0
     };
   }
 }

@@ -13,17 +13,23 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.initDatabase = initDatabase;
-// Arquivo de configuração do banco de dados SQLite
-const sqlite3_1 = __importDefault(require("sqlite3"));
-const sqlite_1 = require("sqlite");
+// Arquivo de configuração do banco de dados MySQL
+const promise_1 = __importDefault(require("mysql2/promise"));
 const dotenv_1 = __importDefault(require("dotenv"));
 // Carrega as variáveis de ambiente
 dotenv_1.default.config();
-// Caminho do banco de dados
-const dbPath = process.env.DB_PATH || './database.sqlite';
 class Database {
     constructor() {
-        this.db = null;
+        this.pool = promise_1.default.createPool({
+            host: process.env.DB_HOST || 'localhost',
+            port: parseInt(process.env.DB_PORT || '3306'),
+            user: process.env.DB_USER || 'root',
+            password: process.env.DB_PASSWORD || '',
+            database: process.env.DB_NAME || 'galeria_arte',
+            waitForConnections: true,
+            connectionLimit: 10,
+            queueLimit: 0
+        });
     }
     static getInstance() {
         if (!Database.instance) {
@@ -31,26 +37,11 @@ class Database {
         }
         return Database.instance;
     }
-    connect() {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                this.db = yield (0, sqlite_1.open)({
-                    filename: dbPath,
-                    driver: sqlite3_1.default.Database
-                });
-                console.log('Conexão com o banco de dados estabelecida.');
-                return true;
-            }
-            catch (error) {
-                console.error('Erro ao conectar ao banco de dados:', error);
-                return false;
-            }
-        });
-    }
     query(sql_1) {
         return __awaiter(this, arguments, void 0, function* (sql, params = []) {
             try {
-                return yield this.db.all(sql, params);
+                const [results] = yield this.pool.execute(sql, params);
+                return results;
             }
             catch (error) {
                 console.error('Erro na consulta SQL:', error);
@@ -58,33 +49,40 @@ class Database {
             }
         });
     }
-    get(sql_1) {
-        return __awaiter(this, arguments, void 0, function* (sql, params = []) {
+    getConnection() {
+        return __awaiter(this, void 0, void 0, function* () {
             try {
-                return yield this.db.get(sql, params);
+                return yield this.pool.getConnection();
             }
             catch (error) {
-                console.error('Erro na consulta SQL (get):', error);
+                console.error('Erro ao obter conexão:', error);
                 throw error;
             }
         });
     }
-    run(sql_1) {
-        return __awaiter(this, arguments, void 0, function* (sql, params = []) {
+    testConnection() {
+        return __awaiter(this, void 0, void 0, function* () {
             try {
-                return yield this.db.run(sql, params);
+                const connection = yield this.pool.getConnection();
+                connection.release();
+                console.log('Conexão com o banco de dados MySQL estabelecida com sucesso.');
+                return true;
             }
             catch (error) {
-                console.error('Erro na execução SQL:', error);
-                throw error;
+                console.error('Erro ao conectar ao banco de dados MySQL:', error);
+                return false;
             }
         });
     }
     close() {
         return __awaiter(this, void 0, void 0, function* () {
-            if (this.db) {
-                yield this.db.close();
-                console.log('Conexão com o banco de dados fechada.');
+            try {
+                yield this.pool.end();
+                console.log('Conexão com o banco de dados MySQL fechada.');
+            }
+            catch (error) {
+                console.error('Erro ao fechar conexão com o banco de dados:', error);
+                throw error;
             }
         });
     }
@@ -92,7 +90,7 @@ class Database {
 function initDatabase() {
     return __awaiter(this, void 0, void 0, function* () {
         const db = Database.getInstance();
-        return yield db.connect();
+        return yield db.testConnection();
     });
 }
 exports.default = Database;

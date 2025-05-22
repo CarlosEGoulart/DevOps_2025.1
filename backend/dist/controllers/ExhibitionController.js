@@ -17,55 +17,94 @@ class ExhibitionController {
     // Listar todas as exposições
     listExhibitions() {
         return __awaiter(this, void 0, void 0, function* () {
-            const sql = `SELECT * FROM exhibitions ORDER BY date DESC`;
+            const sql = `SELECT * FROM exhibition ORDER BY name`;
             return yield this.db.query(sql);
         });
     }
     // Buscar exposição por ID
     getExhibition(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            const sql = `SELECT * FROM exhibitions WHERE id = ?`;
-            return yield this.db.get(sql, [id]);
+            const sql = `SELECT * FROM exhibition WHERE exhibition_id = ?`;
+            const results = yield this.db.query(sql, [id]);
+            return results.length > 0 ? results[0] : null;
         });
     }
     // Criar nova exposição
-    createExhibition(name, date, location, description) {
+    createExhibition(name, description) {
         return __awaiter(this, void 0, void 0, function* () {
             const sql = `
-      INSERT INTO exhibitions (name, date, location, description)
-      VALUES (?, ?, ?, ?)
+      INSERT INTO exhibition (name, description)
+      VALUES (?, ?)
     `;
-            const result = yield this.db.run(sql, [name, date, location, description]);
+            const result = yield this.db.query(sql, [name, description]);
             return {
-                id: result.lastID,
+                exhibition_id: result.insertId,
                 name,
-                date,
-                location,
                 description
             };
         });
     }
     // Atualizar exposição existente
-    updateExhibition(id, name, date, location, description) {
+    updateExhibition(id, name, description) {
         return __awaiter(this, void 0, void 0, function* () {
             const sql = `
-      UPDATE exhibitions
-      SET name = ?, date = ?, location = ?, description = ?, updated_at = CURRENT_TIMESTAMP
-      WHERE id = ?
+      UPDATE exhibition
+      SET name = ?, description = ?
+      WHERE exhibition_id = ?
     `;
-            const result = yield this.db.run(sql, [name, date, location, description, id]);
+            const result = yield this.db.query(sql, [name, description, id]);
             return {
-                success: result.changes > 0
+                success: result.affectedRows > 0
             };
         });
     }
     // Excluir exposição
     deleteExhibition(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            const sql = `DELETE FROM exhibitions WHERE id = ?`;
-            const result = yield this.db.run(sql, [id]);
+            const sql = `DELETE FROM exhibition WHERE exhibition_id = ?`;
+            const result = yield this.db.query(sql, [id]);
             return {
-                success: result.changes > 0
+                success: result.affectedRows > 0
+            };
+        });
+    }
+    // Listar obras de arte em uma exposição
+    listArtsByExhibition(exhibitionId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const sql = `
+      SELECT a.*, ea.exhibition_art_id
+      FROM art a
+      JOIN exhibition_art ea ON a.art_id = ea.art_id
+      WHERE ea.exhibition_id = ?
+    `;
+            return yield this.db.query(sql, [exhibitionId]);
+        });
+    }
+    // Adicionar obra de arte a uma exposição
+    addArtToExhibition(exhibitionId, artId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const sql = `
+      INSERT INTO exhibition_art (exhibition_id, art_id)
+      VALUES (?, ?)
+    `;
+            const result = yield this.db.query(sql, [exhibitionId, artId]);
+            return {
+                exhibition_art_id: result.insertId,
+                exhibition_id: exhibitionId,
+                art_id: artId
+            };
+        });
+    }
+    // Remover obra de arte de uma exposição
+    removeArtFromExhibition(exhibitionId, artId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const sql = `
+      DELETE FROM exhibition_art 
+      WHERE exhibition_id = ? AND art_id = ?
+    `;
+            const result = yield this.db.query(sql, [exhibitionId, artId]);
+            return {
+                success: result.affectedRows > 0
             };
         });
     }

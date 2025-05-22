@@ -3,21 +3,27 @@
 
 // Dados iniciais
 let artists = [
-  { id: 1, name: 'Pablo Picasso', bio: 'Artista espanhol, fundador do cubismo', birth_year: 1881, instagram: '@picasso_legacy' },
-  { id: 2, name: 'Frida Kahlo', bio: 'Pintora mexicana conhecida por seus autorretratos', birth_year: 1907, instagram: '@frida_kahlo_foundation' },
-  { id: 3, name: 'Salvador Dalí', bio: 'Mestre do surrealismo', birth_year: 1904, instagram: '@dali_universe' }
+  { artist_id: 1, name: 'Pablo Picasso', bio: 'Artista espanhol, fundador do cubismo', year: 1881, instagram: '@picasso_legacy' },
+  { artist_id: 2, name: 'Frida Kahlo', bio: 'Pintora mexicana conhecida por seus autorretratos', year: 1907, instagram: '@frida_kahlo_foundation' },
+  { artist_id: 3, name: 'Salvador Dalí', bio: 'Mestre do surrealismo', year: 1904, instagram: '@dali_universe' }
 ];
 
 let arts = [
-  { id: 1, title: 'Guernica', description: 'Obra-prima que retrata os horrores da Guerra Civil Espanhola', year: 1937, image_url: 'https://upload.wikimedia.org/wikipedia/en/7/74/PicassoGuernica.jpg', artist_id: 1 },
-  { id: 2, title: 'As Duas Fridas', description: 'Autorretrato duplo de Frida Kahlo', year: 1939, image_url: 'https://upload.wikimedia.org/wikipedia/en/8/8f/The_Two_Fridas.jpg', artist_id: 2 },
-  { id: 3, title: 'A Persistência da Memória', description: 'Famosa obra surrealista com relógios derretidos', year: 1931, image_url: 'https://upload.wikimedia.org/wikipedia/en/d/dd/The_Persistence_of_Memory.jpg', artist_id: 3 }
+  { art_id: 1, title: 'Guernica', description: 'Obra-prima que retrata os horrores da Guerra Civil Espanhola', year: 1937, url_image: 'https://upload.wikimedia.org/wikipedia/en/7/74/PicassoGuernica.jpg', artist_id: 1 },
+  { art_id: 2, title: 'As Duas Fridas', description: 'Autorretrato duplo de Frida Kahlo', year: 1939, url_image: 'https://upload.wikimedia.org/wikipedia/en/8/8f/The_Two_Fridas.jpg', artist_id: 2 },
+  { art_id: 3, title: 'A Persistência da Memória', description: 'Famosa obra surrealista com relógios derretidos', year: 1931, url_image: 'https://upload.wikimedia.org/wikipedia/en/d/dd/The_Persistence_of_Memory.jpg', artist_id: 3 }
 ];
 
 let exhibitions = [
-  { id: 1, name: 'Modernismo Europeu', date: '2025-06-15', location: 'Museu de Arte Moderna', description: 'Exposição sobre o movimento modernista na Europa' },
-  { id: 2, name: 'Arte Latino-Americana', date: '2025-07-20', location: 'Galeria Nacional', description: 'Celebração da arte e cultura latino-americana' },
-  { id: 3, name: 'Surrealismo e Além', date: '2025-08-10', location: 'Centro Cultural', description: 'Explorando o movimento surrealista e seu legado' }
+  { exhibition_id: 1, name: 'Modernismo Europeu', description: 'Exposição sobre o movimento modernista na Europa' },
+  { exhibition_id: 2, name: 'Arte Latino-Americana', description: 'Celebração da arte e cultura latino-americana' },
+  { exhibition_id: 3, name: 'Surrealismo e Além', description: 'Explorando o movimento surrealista e seu legado' }
+];
+
+let exhibition_arts = [
+  { exhibition_art_id: 1, exhibition_id: 1, art_id: 1 },
+  { exhibition_art_id: 2, exhibition_id: 2, art_id: 2 },
+  { exhibition_art_id: 3, exhibition_id: 3, art_id: 3 }
 ];
 
 // Função para simular atraso de rede
@@ -71,10 +77,10 @@ async function processApiRequest(path, method, body) {
   
   if (path === 'artists' && method === 'POST') {
     const newArtist = {
-      id: artists.length > 0 ? Math.max(...artists.map(a => a.id)) + 1 : 1,
+      artist_id: artists.length > 0 ? Math.max(...artists.map(a => a.artist_id)) + 1 : 1,
       name: body.name,
       bio: body.bio,
-      birth_year: body.birthYear,
+      year: body.year,
       instagram: body.instagram
     };
     artists.push(newArtist);
@@ -83,7 +89,7 @@ async function processApiRequest(path, method, body) {
   
   if (path.startsWith('artists/') && method === 'GET') {
     const id = parseInt(path.split('/')[1]);
-    const artist = artists.find(a => a.id === id);
+    const artist = artists.find(a => a.artist_id === id);
     if (artist) {
       return { status: 200, data: artist };
     }
@@ -92,13 +98,13 @@ async function processApiRequest(path, method, body) {
   
   if (path.startsWith('artists/') && method === 'PUT') {
     const id = parseInt(path.split('/')[1]);
-    const index = artists.findIndex(a => a.id === id);
+    const index = artists.findIndex(a => a.artist_id === id);
     if (index !== -1) {
       artists[index] = {
         ...artists[index],
         name: body.name,
         bio: body.bio,
-        birth_year: body.birthYear,
+        year: body.year,
         instagram: body.instagram
       };
       return { status: 200, data: { success: true } };
@@ -108,7 +114,7 @@ async function processApiRequest(path, method, body) {
   
   if (path.startsWith('artists/') && method === 'DELETE') {
     const id = parseInt(path.split('/')[1]);
-    const index = artists.findIndex(a => a.id === id);
+    const index = artists.findIndex(a => a.artist_id === id);
     if (index !== -1) {
       artists.splice(index, 1);
       return { status: 200, data: { success: true } };
@@ -123,11 +129,12 @@ async function processApiRequest(path, method, body) {
   
   if (path === 'arts' && method === 'POST') {
     const newArt = {
-      id: arts.length > 0 ? Math.max(...arts.map(a => a.id)) + 1 : 1,
+      art_id: arts.length > 0 ? Math.max(...arts.map(a => a.art_id)) + 1 : 1,
       title: body.title,
       description: body.description,
       year: body.year,
-      image_url: body.imageUrl
+      url_image: body.urlImage,
+      artist_id: body.artistId
     };
     arts.push(newArt);
     return { status: 201, data: newArt };
@@ -135,7 +142,7 @@ async function processApiRequest(path, method, body) {
   
   if (path.startsWith('arts/') && method === 'GET') {
     const id = parseInt(path.split('/')[1]);
-    const art = arts.find(a => a.id === id);
+    const art = arts.find(a => a.art_id === id);
     if (art) {
       return { status: 200, data: art };
     }
@@ -144,14 +151,15 @@ async function processApiRequest(path, method, body) {
   
   if (path.startsWith('arts/') && method === 'PUT') {
     const id = parseInt(path.split('/')[1]);
-    const index = arts.findIndex(a => a.id === id);
+    const index = arts.findIndex(a => a.art_id === id);
     if (index !== -1) {
       arts[index] = {
         ...arts[index],
         title: body.title,
         description: body.description,
         year: body.year,
-        image_url: body.imageUrl
+        url_image: body.urlImage,
+        artist_id: body.artistId
       };
       return { status: 200, data: { success: true } };
     }
@@ -160,7 +168,7 @@ async function processApiRequest(path, method, body) {
   
   if (path.startsWith('arts/') && method === 'DELETE') {
     const id = parseInt(path.split('/')[1]);
-    const index = arts.findIndex(a => a.id === id);
+    const index = arts.findIndex(a => a.art_id === id);
     if (index !== -1) {
       arts.splice(index, 1);
       return { status: 200, data: { success: true } };
@@ -175,10 +183,8 @@ async function processApiRequest(path, method, body) {
   
   if (path === 'exhibitions' && method === 'POST') {
     const newExhibition = {
-      id: exhibitions.length > 0 ? Math.max(...exhibitions.map(e => e.id)) + 1 : 1,
+      exhibition_id: exhibitions.length > 0 ? Math.max(...exhibitions.map(e => e.exhibition_id)) + 1 : 1,
       name: body.name,
-      date: body.date,
-      location: body.location,
       description: body.description
     };
     exhibitions.push(newExhibition);
@@ -187,7 +193,7 @@ async function processApiRequest(path, method, body) {
   
   if (path.startsWith('exhibitions/') && method === 'GET') {
     const id = parseInt(path.split('/')[1]);
-    const exhibition = exhibitions.find(e => e.id === id);
+    const exhibition = exhibitions.find(e => e.exhibition_id === id);
     if (exhibition) {
       return { status: 200, data: exhibition };
     }
@@ -196,13 +202,11 @@ async function processApiRequest(path, method, body) {
   
   if (path.startsWith('exhibitions/') && method === 'PUT') {
     const id = parseInt(path.split('/')[1]);
-    const index = exhibitions.findIndex(e => e.id === id);
+    const index = exhibitions.findIndex(e => e.exhibition_id === id);
     if (index !== -1) {
       exhibitions[index] = {
         ...exhibitions[index],
         name: body.name,
-        date: body.date,
-        location: body.location,
         description: body.description
       };
       return { status: 200, data: { success: true } };
@@ -212,12 +216,63 @@ async function processApiRequest(path, method, body) {
   
   if (path.startsWith('exhibitions/') && method === 'DELETE') {
     const id = parseInt(path.split('/')[1]);
-    const index = exhibitions.findIndex(e => e.id === id);
+    const index = exhibitions.findIndex(e => e.exhibition_id === id);
     if (index !== -1) {
       exhibitions.splice(index, 1);
       return { status: 200, data: { success: true } };
     }
     return { status: 404, data: { error: 'Exposição não encontrada' } };
+  }
+  
+  // Relacionamento entre Exposições e Obras
+  if (path.match(/^exhibitions\/\d+\/arts$/) && method === 'GET') {
+    const exhibitionId = parseInt(path.split('/')[1]);
+    const exhibitionArtsIds = exhibition_arts
+      .filter(ea => ea.exhibition_id === exhibitionId)
+      .map(ea => ea.art_id);
+    const exhibitionArts = arts.filter(art => exhibitionArtsIds.includes(art.art_id));
+    return { status: 200, data: exhibitionArts };
+  }
+  
+  if (path.match(/^exhibitions\/\d+\/arts\/\d+$/) && method === 'POST') {
+    const parts = path.split('/');
+    const exhibitionId = parseInt(parts[1]);
+    const artId = parseInt(parts[3]);
+    
+    // Verificar se já existe
+    const exists = exhibition_arts.some(ea => 
+      ea.exhibition_id === exhibitionId && ea.art_id === artId
+    );
+    
+    if (exists) {
+      return { status: 400, data: { error: 'Relação já existe' } };
+    }
+    
+    const newExhibitionArt = {
+      exhibition_art_id: exhibition_arts.length > 0 ? Math.max(...exhibition_arts.map(ea => ea.exhibition_art_id)) + 1 : 1,
+      exhibition_id: exhibitionId,
+      art_id: artId
+    };
+    
+    exhibition_arts.push(newExhibitionArt);
+    return { status: 201, data: newExhibitionArt };
+  }
+  
+  if (path.match(/^exhibitions\/\d+\/arts\/\d+$/) && method === 'DELETE') {
+    const parts = path.split('/');
+    const exhibitionId = parseInt(parts[1]);
+    const artId = parseInt(parts[3]);
+    
+    const index = exhibition_arts.findIndex(ea => 
+      ea.exhibition_id === exhibitionId && ea.art_id === artId
+    );
+    
+    if (index !== -1) {
+      exhibition_arts.splice(index, 1);
+      return { status: 200, data: { success: true } };
+    }
+    
+    return { status: 404, data: { error: 'Relação não encontrada' } };
   }
   
   // Rota não encontrada

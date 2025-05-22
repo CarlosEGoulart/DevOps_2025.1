@@ -17,56 +17,79 @@ class ArtController {
     // Listar todas as obras de arte
     listArts() {
         return __awaiter(this, void 0, void 0, function* () {
-            const sql = `SELECT * FROM arts ORDER BY id DESC`;
+            const sql = `
+      SELECT a.*, artist.name as artist_name 
+      FROM art a
+      LEFT JOIN artist ON a.artist_id = artist.artist_id
+      ORDER BY a.art_id DESC
+    `;
             return yield this.db.query(sql);
         });
     }
     // Buscar obra de arte por ID
     getArt(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            const sql = `SELECT * FROM arts WHERE id = ?`;
-            return yield this.db.get(sql, [id]);
+            const sql = `
+      SELECT a.*, artist.name as artist_name 
+      FROM art a
+      LEFT JOIN artist ON a.artist_id = artist.artist_id
+      WHERE a.art_id = ?
+    `;
+            const results = yield this.db.query(sql, [id]);
+            return results.length > 0 ? results[0] : null;
         });
     }
     // Criar nova obra de arte
-    createArt(title, description, year, imageUrl) {
+    createArt(title, description, year, urlImage, artistId) {
         return __awaiter(this, void 0, void 0, function* () {
             const sql = `
-      INSERT INTO arts (title, description, year, image_url)
-      VALUES (?, ?, ?, ?)
+      INSERT INTO art (title, description, year, url_image, artist_id)
+      VALUES (?, ?, ?, ?, ?)
     `;
-            const result = yield this.db.run(sql, [title, description, year, imageUrl]);
+            const result = yield this.db.query(sql, [title, description, year, urlImage, artistId || null]);
             return {
-                id: result.lastID,
+                art_id: result.insertId,
                 title,
                 description,
                 year,
-                image_url: imageUrl
+                url_image: urlImage,
+                artist_id: artistId
             };
         });
     }
     // Atualizar obra de arte existente
-    updateArt(id, title, description, year, imageUrl) {
+    updateArt(id, title, description, year, urlImage, artistId) {
         return __awaiter(this, void 0, void 0, function* () {
             const sql = `
-      UPDATE arts
-      SET title = ?, description = ?, year = ?, image_url = ?, updated_at = CURRENT_TIMESTAMP
-      WHERE id = ?
+      UPDATE art
+      SET title = ?, description = ?, year = ?, url_image = ?, artist_id = ?
+      WHERE art_id = ?
     `;
-            const result = yield this.db.run(sql, [title, description, year, imageUrl, id]);
+            const result = yield this.db.query(sql, [title, description, year, urlImage, artistId || null, id]);
             return {
-                success: result.changes > 0
+                success: result.affectedRows > 0
             };
         });
     }
     // Excluir obra de arte
     deleteArt(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            const sql = `DELETE FROM arts WHERE id = ?`;
-            const result = yield this.db.run(sql, [id]);
+            const sql = `DELETE FROM art WHERE art_id = ?`;
+            const result = yield this.db.query(sql, [id]);
             return {
-                success: result.changes > 0
+                success: result.affectedRows > 0
             };
+        });
+    }
+    // Listar obras de arte por artista
+    listArtsByArtist(artistId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const sql = `
+      SELECT * FROM art 
+      WHERE artist_id = ?
+      ORDER BY year DESC
+    `;
+            return yield this.db.query(sql, [artistId]);
         });
     }
 }
