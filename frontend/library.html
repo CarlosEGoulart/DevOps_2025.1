@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galeria de Arte - Biblioteca</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <script src="js/api.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Goski Gallery</h1>
+        <nav>
+            <ul>
+                <li><a href="index.html">Página Inicial</a></li>
+                <li><a href="create.html">Criar Obra</a></li>
+                <li><a href="library.html" class="active">Biblioteca</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <h1>Biblioteca de Arte</h1>
+        <h2>Explore nossa coleção e gerencie obras</h2>
+        
+        <section id="artists-section">
+            <h2>Artistas</h2>
+            <div class="grid" id="artists-grid">
+                <!-- Conteúdo será preenchido dinamicamente pelo JavaScript -->
+            </div>
+        </section>
+        
+        <section id="artworks-section">
+            <h2>Obras de Arte</h2>
+            <div class="grid" id="artworks-grid">
+                <!-- Conteúdo será preenchido dinamicamente pelo JavaScript -->
+            </div>
+        </section>
+        
+        <section id="exhibitions-section">
+            <h2>Exposições</h2>
+            <div class="grid" id="exhibitions-grid">
+                <!-- Conteúdo será preenchido dinamicamente pelo JavaScript -->
+            </div>
+        </section>
+    </main>
+    
+    <!-- Modal para edição de artistas -->
+    <div class="modal" id="artist-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Editar Artista</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <form id="edit-artist-form">
+                <input type="hidden" id="edit-artist-id">
+                <input type="text" id="edit-artist-name" placeholder="Nome do artista" required>
+                <textarea id="edit-artist-bio" placeholder="Biografia do artista" required></textarea>
+                <input type="number" id="edit-artist-birth-year" placeholder="Ano de nascimento" required>
+                <input type="text" id="edit-artist-instagram" placeholder="Instagram do artista" required>
+                <div class="modal-footer">
+                    <button type="button" class="modal-close-btn">Cancelar</button>
+                    <button type="submit">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Modal para edição de obras de arte -->
+    <div class="modal" id="artwork-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Editar Obra de Arte</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <form id="edit-artwork-form">
+                <input type="hidden" id="edit-artwork-id">
+                <input type="text" id="edit-artwork-title" placeholder="Título da obra" required>
+                <textarea id="edit-artwork-description" placeholder="Descrição da obra" required></textarea>
+                <input type="number" id="edit-artwork-year" placeholder="Ano da obra" required>
+                <input type="text" id="edit-artwork-url" placeholder="URL da imagem" required>
+                <div class="modal-footer">
+                    <button type="button" class="modal-close-btn">Cancelar</button>
+                    <button type="submit">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Modal para edição de exposições -->
+    <div class="modal" id="exhibition-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Editar Exposição</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <form id="edit-exhibition-form">
+                <input type="hidden" id="edit-exhibition-id">
+                <input type="text" id="edit-exhibition-name" placeholder="Nome da exposição" required>
+                <input type="date" id="edit-exhibition-date" required>
+                <input type="text" id="edit-exhibition-location" placeholder="Local da exposição" required>
+                <textarea id="edit-exhibition-description" placeholder="Descrição da exposição" required></textarea>
+                <div class="modal-footer">
+                    <button type="button" class="modal-close-btn">Cancelar</button>
+                    <button type="submit">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Notificações -->
+    <div class="notification success" id="success-notification">Operação realizada com sucesso!</div>
+    <div class="notification error" id="error-notification">Ocorreu um erro. Tente novamente.</div>
+    
+    <footer>
+        <p>&copy; 2025 Goski Gallery - Todos os direitos reservados</p>
+    </footer>
+    
+    <script src="js/library.js"></script>
+</body>
+</html>
