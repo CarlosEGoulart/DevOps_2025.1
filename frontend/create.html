@@ -41,6 +41,16 @@
                 <textarea id="artwork-description" placeholder="Descrição da obra" required></textarea>
                 <input type="number" id="artwork-year" placeholder="Ano da obra" required>
                 <input type="text" id="artwork-url" placeholder="URL da imagem" required>
+                
+                <!-- Novo campo para selecionar o artista -->
+                <div class="form-group">
+                    <label for="artwork-artist">Artista:</label>
+                    <select id="artwork-artist" required>
+                        <option value="">Selecione um artista</option>
+                        <!-- Opções serão carregadas dinamicamente via JavaScript -->
+                    </select>
+                </div>
+                
                 <button type="submit" class="submit-btn">Adicionar Obra</button>
             </form>
         </section>
@@ -50,6 +60,18 @@
             <form id="add-exhibition-form" class="create-form">
                 <input type="text" id="exhibition-name" placeholder="Nome da exposição" required>
                 <textarea id="exhibition-description" placeholder="Descrição da exposição" required></textarea>
+                
+                <!-- Novo campo para selecionar múltiplas obras -->
+                <div class="form-group">
+                    <label for="exhibition-artworks">Obras de Arte:</label>
+                    <div class="multi-select-container">
+                        <select id="exhibition-artworks" multiple required>
+                            <!-- Opções serão carregadas dinamicamente via JavaScript -->
+                        </select>
+                        <p class="help-text">Segure Ctrl (ou Cmd no Mac) para selecionar múltiplas obras</p>
+                    </div>
+                </div>
+                
                 <button type="submit" class="submit-btn">Adicionar Exposição</button>
             </form>
         </section>

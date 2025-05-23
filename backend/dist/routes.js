@@ -13,7 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.router = void 0;
-// Arquivo de rotas da API
+// Arquivo de rotas da API com suporte a vínculos
 const express_1 = require("express");
 const database_1 = __importDefault(require("./config/database"));
 const ArtController_1 = __importDefault(require("./controllers/ArtController"));
@@ -169,11 +169,24 @@ exports.router.get('/exhibitions', (req, res) => __awaiter(void 0, void 0, void 
         res.status(500).json({ error: 'Erro ao listar exposições' });
     }
 }));
+// Rota atualizada para criar exposição com obras vinculadas
 exports.router.post('/exhibitions', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { name, description } = req.body;
-        const created = yield exhibitionController.createExhibition(name, description);
-        res.status(201).json(created);
+        const { name, description, artworks } = req.body;
+        // Criar a exposição
+        const exhibition = yield exhibitionController.createExhibition(name, description);
+        // Se houver obras para vincular
+        if (artworks && artworks.length > 0) {
+            if (typeof exhibition.exhibition_id !== 'number') {
+                throw new Error('ID da exposição não definido');
+            }
+            // Vincular cada obra à exposição
+            for (const artId of artworks) {
+                yield exhibitionController.addArtToExhibition(exhibition.exhibition_id, artId);
+            }
+        }
+        // Retornar a exposição criada
+        res.status(201).json(exhibition);
     }
     catch (error) {
         console.error('Erro ao criar exposição:', error);

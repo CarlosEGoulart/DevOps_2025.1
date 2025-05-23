@@ -1,0 +1,64 @@
+/* Estilos adicionais para os novos campos de formulário */
+
+/* Já existem estilos base para formulários no arquivo original */
+
+/* Estilos para o select de artistas */
+select {
+  width: 100%;
+  padding: 0.8rem;
+  margin-bottom: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 1rem;
+  background-color: white;
+  appearance: auto; /* Mantém a aparência nativa do select */
+}
+
+/* Estilos para o grupo de formulário com label */
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: #2c3e50;
+}
+
+/* Estilos para seleção múltipla */
+.multi-select-container {
+  position: relative;
+}
+
+select[multiple] {
+  height: 150px;
+  padding: 0.5rem;
+}
+
+select[multiple] option {
+  padding: 0.5rem;
+  margin-bottom: 0.25rem;
+  border-radius: 2px;
+}
+
+select[multiple] option:checked {
+  background-color: #3498db;
+  color: white;
+}
+
+/* Texto de ajuda */
+.help-text {
+  font-size: 0.85rem;
+  color: #7f8c8d;
+  margin-top: 0.5rem;
+  font-style: italic;
+}
+
+/* Responsividade para os novos elementos */
+@media (max-width: 768px) {
+  select[multiple] {
+    height: 120px;
+  }
+}

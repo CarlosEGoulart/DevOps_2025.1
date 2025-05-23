@@ -1,4 +1,4 @@
-// Arquivo de rotas da API
+// Arquivo de rotas da API com suporte a vínculos
 import { Router } from 'express';
 import Database from './config/database';
 import ArtController from './controllers/ArtController';
@@ -154,11 +154,27 @@ router.get('/exhibitions', async (req, res) => {
     }
 });
 
+// Rota atualizada para criar exposição com obras vinculadas
 router.post('/exhibitions', async (req, res) => {
     try {
-        const { name, description } = req.body;
-        const created = await exhibitionController.createExhibition(name, description);
-        res.status(201).json(created);
+        const { name, description, artworks } = req.body;
+        
+        // Criar a exposição
+        const exhibition = await exhibitionController.createExhibition(name, description);
+        
+        // Se houver obras para vincular
+        if (artworks && artworks.length > 0) {
+            if (typeof exhibition.exhibition_id !== 'number') {
+                throw new Error('ID da exposição não definido');
+            }
+            // Vincular cada obra à exposição
+            for (const artId of artworks) {
+                await exhibitionController.addArtToExhibition(exhibition.exhibition_id, artId);
+            }
+        }
+        
+        // Retornar a exposição criada
+        res.status(201).json(exhibition);
     } catch (error) {
         console.error('Erro ao criar exposição:', error);
         res.status(400).json({ error: 'Erro ao criar exposição' });

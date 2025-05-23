@@ -1,11 +1,65 @@
-// Script para a página de criação
+// Script para a página de criação com suporte a vínculos
 document.addEventListener('DOMContentLoaded', function() {
+    // Carregar dados iniciais
+    loadArtists();
+    loadArtworks();
+    
     // Configurar formulários
     setupForms();
     
     // Configurar listeners para notificações
     setupNotificationListeners();
 });
+
+// Carregar lista de artistas para o dropdown
+async function loadArtists() {
+    try {
+        const response = await fetch('/api/artists');
+        const artists = await response.json();
+        
+        const artistSelect = document.getElementById('artwork-artist');
+        if (artistSelect) {
+            // Limpar opções existentes, mantendo apenas a opção padrão
+            artistSelect.innerHTML = '<option value="">Selecione um artista</option>';
+            
+            // Adicionar artistas ao dropdown
+            artists.forEach(artist => {
+                const option = document.createElement('option');
+                option.value = artist.artist_id;
+                option.textContent = artist.name;
+                artistSelect.appendChild(option);
+            });
+        }
+    } catch (error) {
+        console.error('Erro ao carregar artistas:', error);
+        showNotification('error', 'Erro ao carregar lista de artistas');
+    }
+}
+
+// Carregar lista de obras para o multi-select
+async function loadArtworks() {
+    try {
+        const response = await fetch('/api/arts');
+        const artworks = await response.json();
+        
+        const artworksSelect = document.getElementById('exhibition-artworks');
+        if (artworksSelect) {
+            // Limpar opções existentes
+            artworksSelect.innerHTML = '';
+            
+            // Adicionar obras ao multi-select
+            artworks.forEach(artwork => {
+                const option = document.createElement('option');
+                option.value = artwork.art_id;
+                option.textContent = `${artwork.title} (${artwork.artist_name || 'Artista desconhecido'})`;
+                artworksSelect.appendChild(option);
+            });
+        }
+    } catch (error) {
+        console.error('Erro ao carregar obras de arte:', error);
+        showNotification('error', 'Erro ao carregar lista de obras de arte');
+    }
+}
 
 // Configurar formulários
 function setupForms() {
@@ -65,6 +119,9 @@ async function createArtist() {
         // Limpar formulário
         document.getElementById('add-artist-form').reset();
         
+        // Recarregar lista de artistas
+        loadArtists();
+        
         // Mostrar notificação de sucesso
         showNotification('success', 'Artista criado com sucesso!');
     } catch (error) {
@@ -73,13 +130,20 @@ async function createArtist() {
     }
 }
 
-// Criar obra de arte
+// Criar obra de arte com vínculo ao artista
 async function createArtwork() {
     try {
         const title = document.getElementById('artwork-title').value;
         const description = document.getElementById('artwork-description').value;
         const year = parseInt(document.getElementById('artwork-year').value);
         const urlImage = document.getElementById('artwork-url').value;
+        const artistId = document.getElementById('artwork-artist').value;
+        
+        // Verificar se um artista foi selecionado
+        if (!artistId) {
+            showNotification('error', 'Por favor, selecione um artista');
+            return;
+        }
         
         const response = await fetch('/api/arts', {
             method: 'POST',
@@ -90,7 +154,8 @@ async function createArtwork() {
                 title,
                 description,
                 year,
-                urlImage
+                urlImage,
+                artistId: parseInt(artistId)
             })
         });
         
@@ -101,6 +166,9 @@ async function createArtwork() {
         // Limpar formulário
         document.getElementById('add-artwork-form').reset();
         
+        // Recarregar lista de obras para o multi-select de exposições
+        loadArtworks();
+        
         // Mostrar notificação de sucesso
         showNotification('success', 'Obra de arte criada com sucesso!');
     } catch (error) {
@@ -109,12 +177,23 @@ async function createArtwork() {
     }
 }
 
-// Criar exposição
+// Criar exposição com vínculo a múltiplas obras
 async function createExhibition() {
     try {
         const name = document.getElementById('exhibition-name').value;
         const description = document.getElementById('exhibition-description').value;
         
+        // Obter obras selecionadas
+        const artworksSelect = document.getElementById('exhibition-artworks');
+        const selectedArtworks = Array.from(artworksSelect.selectedOptions).map(option => parseInt(option.value));
+        
+        // Verificar se pelo menos uma obra foi selecionada
+        if (selectedArtworks.length === 0) {
+            showNotification('error', 'Por favor, selecione pelo menos uma obra de arte');
+            return;
+        }
+        
+        // Primeiro, criar a exposição
         const response = await fetch('/api/exhibitions', {
             method: 'POST',
             headers: {
@@ -122,7 +201,8 @@ async function createExhibition() {
             },
             body: JSON.stringify({
                 name,
-                description
+                description,
+                artworks: selectedArtworks // Enviando a lista de IDs das obras selecionadas
             })
         });
         
