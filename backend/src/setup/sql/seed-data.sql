@@ -7,7 +7,7 @@ INSERT INTO artist (name, bio, year, instagram) VALUES
 -- Inserir obras de arte
 INSERT INTO art (title, description, year, url_image, artist_id) VALUES 
 ('Ganso de Terno', 'Um ganso vestindo terno e usando um monoculo.', 2024, '', 1),
-('Gato mafioso', 'Um gato que esconde a fonte de sua fortuna.', 2024, '', 1));
+('Gato mafioso', 'Um gato que esconde a fonte de sua fortuna.', 2024, '', 1);
 
 -- Inserir exposições
 INSERT INTO exhibition (name, description) VALUES 
