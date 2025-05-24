@@ -6,14 +6,14 @@ INSERT INTO artist (name, bio, year, instagram) VALUES
 
 -- Inserir obras de arte
 INSERT INTO art (title, description, year, url_image, artist_id) VALUES 
-('Ganso de Terno', 'Um ganso vestindo terno e usando um monoculo.', 2024, '', 1),
-('Gato mafioso', 'Um gato que esconde a fonte de sua fortuna.', 2024, '', 1);
+('Gato mafioso', 'Um gato vestindo terno que esconde o segredo da origem de sua fortuna', 2024, 'a', 1),
+('Ganso de Terno', 'Um ganso de classe', 2024, 'a', 1);
 
 -- Inserir exposições
 INSERT INTO exhibition (name, description) VALUES 
-('Artes da Julia', 'Exposição sobre obras de arte da artista Julia Zy.');
+('Exibição de obras da Julia', 'Exposição sobre as obras da Julia');
 
 -- Relacionar obras e exposições
 INSERT INTO exhibition_art (exhibition_id, art_id) VALUES 
-(1, 1), -- Artes da Julia recebendo Ganso de Terno
-(1, 2); -- Artes da Julia recebendo Gato mafioso
+(1, 1), 
+(1, 2);

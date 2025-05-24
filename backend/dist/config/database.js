@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.initDatabase = initDatabase;
+exports.initDatabase = void 0;
 // Arquivo de configuração do banco de dados MySQL
 const promise_1 = __importDefault(require("mysql2/promise"));
 const dotenv_1 = __importDefault(require("dotenv"));
@@ -37,8 +37,8 @@ class Database {
         }
         return Database.instance;
     }
-    query(sql_1) {
-        return __awaiter(this, arguments, void 0, function* (sql, params = []) {
+    query(sql, params = []) {
+        return __awaiter(this, void 0, void 0, function* () {
             try {
                 const [results] = yield this.pool.execute(sql, params);
                 return results;
@@ -93,4 +93,5 @@ function initDatabase() {
         return yield db.testConnection();
     });
 }
+exports.initDatabase = initDatabase;
 exports.default = Database;
