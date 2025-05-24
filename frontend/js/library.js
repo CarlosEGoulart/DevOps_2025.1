@@ -161,129 +161,80 @@ function renderExhibitions(exhibitions) {
 
 // Função para abrir modal de edição
 function openEditModal(type, item) {
-    const modal = document.getElementById('edit-modal');
+    const modal = document.getElementById(`${type}-modal`);
     if (!modal) return;
     
-    // Limpar campos anteriores
-    document.getElementById('edit-fields').innerHTML = '';
-    
-    // Configurar o tipo e ID do item
-    document.getElementById('edit-id').value = item[`${type}_id`] || item.art_id || item.artist_id || item.exhibition_id;
-    document.getElementById('edit-type').value = type;
-    
-    // Atualizar título do modal
-    document.querySelector('.modal-title').textContent = `Editar ${getTypeName(type)}`;
-    
-    // Criar campos específicos para cada tipo
-    let fieldsHTML = '';
+    // Preencher o formulário com os dados do item
+    const form = modal.querySelector('form');
     
     switch (type) {
         case 'artist':
-            fieldsHTML = `
-                <div class="form-group">
-                    <label for="edit-name">Nome</label>
-                    <input type="text" id="edit-name" name="name" value="${item.name}" required>
-                </div>
-                <div class="form-group">
-                    <label for="edit-bio">Biografia</label>
-                    <textarea id="edit-bio" name="bio">${item.bio || ''}</textarea>
-                </div>
-                <div class="form-group">
-                    <label for="edit-year">Ano de Nascimento</label>
-                    <input type="number" id="edit-year" name="year" value="${item.year}" required>
-                </div>
-                <div class="form-group">
-                    <label for="edit-instagram">Instagram</label>
-                    <input type="text" id="edit-instagram" name="instagram" value="${item.instagram || ''}">
-                </div>
-            `;
+            document.getElementById('edit-artist-id').value = item.artist_id;
+            document.getElementById('edit-artist-name').value = item.name;
+            document.getElementById('edit-artist-bio').value = item.bio || '';
+            document.getElementById('edit-artist-year').value = item.year;
+            document.getElementById('edit-artist-instagram').value = item.instagram || '';
             break;
             
         case 'artwork':
-            fieldsHTML = `
-                <div class="form-group">
-                    <label for="edit-title">Título</label>
-                    <input type="text" id="edit-title" name="title" value="${item.title}" required>
-                </div>
-                <div class="form-group">
-                    <label for="edit-description">Descrição</label>
-                    <textarea id="edit-description" name="description">${item.description || ''}</textarea>
-                </div>
-                <div class="form-group">
-                    <label for="edit-year">Ano</label>
-                    <input type="number" id="edit-year" name="year" value="${item.year}" required>
-                </div>
-                <div class="form-group">
-                    <label for="edit-url">URL da Imagem</label>
-                    <input type="text" id="edit-url" name="urlImage" value="${item.url_image || ''}">
-                </div>
-            `;
+            document.getElementById('edit-artwork-id').value = item.art_id;
+            document.getElementById('edit-artwork-title').value = item.title;
+            document.getElementById('edit-artwork-description').value = item.description || '';
+            document.getElementById('edit-artwork-year').value = item.year;
+            document.getElementById('edit-artwork-url').value = item.url_image || '';
             break;
             
         case 'exhibition':
-            fieldsHTML = `
-                <div class="form-group">
-                    <label for="edit-name">Nome</label>
-                    <input type="text" id="edit-name" name="name" value="${item.name}" required>
-                </div>
-                <div class="form-group">
-                    <label for="edit-description">Descrição</label>
-                    <textarea id="edit-description" name="description">${item.description || ''}</textarea>
-                </div>
-            `;
+            document.getElementById('edit-exhibition-id').value = item.exhibition_id;
+            document.getElementById('edit-exhibition-name').value = item.name;
+            document.getElementById('edit-exhibition-description').value = item.description || '';
             break;
     }
     
-    document.getElementById('edit-fields').innerHTML = fieldsHTML;
-    
     // Configurar o formulário para submissão
-    document.getElementById('edit-form').onsubmit = function(e) {
+    form.onsubmit = function(e) {
         e.preventDefault();
-        saveItem();
+        saveItem(type);
     };
     
     // Mostrar o modal
     modal.classList.add('active');
 }
 
-// Função para obter nome amigável do tipo
-function getTypeName(type) {
-    switch (type) {
-        case 'artist': return 'Artista';
-        case 'artwork': return 'Obra de Arte';
-        case 'exhibition': return 'Exposição';
-        default: return type;
-    }
-}
-
 // Função para salvar item editado
-async function saveItem() {
+async function saveItem(type) {
     try {
-        const type = document.getElementById('edit-type').value;
-        const id = document.getElementById('edit-id').value;
+        let id, data, endpoint;
         
-        // Coletar dados do formulário
-        const formData = new FormData(document.getElementById('edit-form'));
-        const data = {};
-        
-        for (const [key, value] of formData.entries()) {
-            if (key === 'year') {
-                data[key] = parseInt(value);
-            } else {
-                data[key] = value;
-            }
-        }
-        
-        // Determinar o endpoint com base no tipo
-        let endpoint;
         switch (type) {
             case 'artist':
+                id = document.getElementById('edit-artist-id').value;
+                data = {
+                    name: document.getElementById('edit-artist-name').value,
+                    bio: document.getElementById('edit-artist-bio').value,
+                    year: parseInt(document.getElementById('edit-artist-year').value),
+                    instagram: document.getElementById('edit-artist-instagram').value
+                };
                 endpoint = `/api/artists/${id}`;
                 break;
+                
             case 'artwork':
+                id = document.getElementById('edit-artwork-id').value;
+                data = {
+                    title: document.getElementById('edit-artwork-title').value,
+                    description: document.getElementById('edit-artwork-description').value,
+                    year: parseInt(document.getElementById('edit-artwork-year').value),
+                    urlImage: document.getElementById('edit-artwork-url').value
+                };
                 endpoint = `/api/arts/${id}`;
                 break;
+                
             case 'exhibition':
+                id = document.getElementById('edit-exhibition-id').value;
+                data = {
+                    name: document.getElementById('edit-exhibition-name').value,
+                    description: document.getElementById('edit-exhibition-description').value
+                };
                 endpoint = `/api/exhibitions/${id}`;
                 break;
         }
@@ -302,7 +253,7 @@ async function saveItem() {
         }
         
         // Fechar o modal
-        closeEditModal();
+        closeModal(type);
         
         // Recarregar os dados
         loadData();
@@ -359,9 +310,9 @@ async function deleteItem(type, id) {
     }
 }
 
-// Função para fechar modal de edição
-function closeEditModal() {
-    const modal = document.getElementById('edit-modal');
+// Função para fechar modal
+function closeModal(type) {
+    const modal = document.getElementById(`${type}-modal`);
     if (modal) {
         modal.classList.remove('active');
     }
@@ -369,8 +320,8 @@ function closeEditModal() {
 
 // Configurar listeners para modais
 function setupModalListeners() {
-    // Fechar modal ao clicar no botão de fechar
-    document.querySelectorAll('.modal-close').forEach(button => {
+    // Fechar modal ao clicar no botão de fechar ou fora do conteúdo
+    document.querySelectorAll('.modal-close, .modal-close-btn').forEach(button => {
         button.addEventListener('click', function() {
             const modal = this.closest('.modal');
             if (modal) {

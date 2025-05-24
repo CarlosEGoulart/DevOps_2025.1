@@ -3,27 +3,22 @@
 
 // Dados iniciais
 let artists = [
-  { artist_id: 1, name: 'Pablo Picasso', bio: 'Artista espanhol, fundador do cubismo', year: 1881, instagram: '@picasso_legacy' },
-  { artist_id: 2, name: 'Frida Kahlo', bio: 'Pintora mexicana conhecida por seus autorretratos', year: 1907, instagram: '@frida_kahlo_foundation' },
-  { artist_id: 3, name: 'Salvador Dalí', bio: 'Mestre do surrealismo', year: 1904, instagram: '@dali_universe' }
+  { artist_id: 1, name: 'Ana Julia Costa Zvierzykovski', bio: 'Estuante de arte na unicentro', year: 2005, instagram: '@jxliaazy' },
+  { artist_id: 2, name: 'Carlos', bio: 'Namorado da Julia', year: 2004, instagram: '@carlllos.png' }
 ];
 
 let arts = [
-  { art_id: 1, title: 'Guernica', description: 'Obra-prima que retrata os horrores da Guerra Civil Espanhola', year: 1937, url_image: 'https://upload.wikimedia.org/wikipedia/en/7/74/PicassoGuernica.jpg', artist_id: 1 },
-  { art_id: 2, title: 'As Duas Fridas', description: 'Autorretrato duplo de Frida Kahlo', year: 1939, url_image: 'https://upload.wikimedia.org/wikipedia/en/8/8f/The_Two_Fridas.jpg', artist_id: 2 },
-  { art_id: 3, title: 'A Persistência da Memória', description: 'Famosa obra surrealista com relógios derretidos', year: 1931, url_image: 'https://upload.wikimedia.org/wikipedia/en/d/dd/The_Persistence_of_Memory.jpg', artist_id: 3 }
+  { art_id: 1, title: 'Gato Mafioso', description: 'Um gato vestindo terno que esconde o segredo da origem de sua fortuna', year: 2024, url_image: 'a', artist_id: 1 },
+  { art_id: 2, title: 'Ganso de Terno', description: 'Um ganso de classe', year: 2024, url_image: 'a', artist_id: 1 }
 ];
 
 let exhibitions = [
-  { exhibition_id: 1, name: 'Modernismo Europeu', description: 'Exposição sobre o movimento modernista na Europa' },
-  { exhibition_id: 2, name: 'Arte Latino-Americana', description: 'Celebração da arte e cultura latino-americana' },
-  { exhibition_id: 3, name: 'Surrealismo e Além', description: 'Explorando o movimento surrealista e seu legado' }
+  { exhibition_id: 1, name: 'Exibição de obras da Julia', description: 'Exposição sobre as obras da Julia' }
 ];
 
 let exhibition_arts = [
   { exhibition_art_id: 1, exhibition_id: 1, art_id: 1 },
-  { exhibition_art_id: 2, exhibition_id: 2, art_id: 2 },
-  { exhibition_art_id: 3, exhibition_id: 3, art_id: 3 }
+  { exhibition_art_id: 2, exhibition_id: 1, art_id: 2 }
 ];
 
 // Função para simular atraso de rede
