@@ -146,11 +146,23 @@ router.get('/artists/:id/arts', async (req, res) => {
 // Rotas para Exposições (Exhibitions)
 router.get('/exhibitions', async (req, res) => {
     try {
+        // Buscar todas as exposições básicas
         const exhibitions = await exhibitionController.listExhibitions();
-        res.json(exhibitions);
+        
+        // Para cada exposição, buscar as obras de arte vinculadas
+        const exhibitionsWithArts = await Promise.all(exhibitions.map(async (exhibition) => {
+            if (typeof exhibition.exhibition_id !== 'number') {
+                // Se o ID não for um número, retorne a exposição sem obras
+                return { ...exhibition, artworks: [] };
+            }
+            const artworks = await exhibitionController.listArtsByExhibition(exhibition.exhibition_id);
+            return { ...exhibition, artworks }; // Adiciona a lista de obras ao objeto da exposição
+        }));
+        
+        res.json(exhibitionsWithArts);
     } catch (error) {
-        console.error('Erro ao listar exposições:', error);
-        res.status(500).json({ error: 'Erro ao listar exposições' });
+        console.error('Erro ao listar exposições com obras:', error);
+        res.status(500).json({ error: 'Erro ao listar exposições com obras' });
     }
 });
 

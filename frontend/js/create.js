@@ -154,7 +154,7 @@ async function createArtwork() {
                 title,
                 description,
                 year,
-                urlImage,
+                url_image: urlImage,
                 artistId: parseInt(artistId)
             })
         });
