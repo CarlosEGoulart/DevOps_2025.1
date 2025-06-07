@@ -1,275 +1,259 @@
-// API simulada para o frontend
-// Este arquivo fornece uma API simulada para o frontend funcionar sem backend real
+// API utility functions for Goski Gallery
+const API_BASE_URL = '../backend';
 
-// Dados iniciais
-let artists = [
-  { artist_id: 1, name: 'Ana Julia Costa Zvierzykovski', bio: 'Estuante de arte na unicentro', year: 2005, instagram: '@jxliaazy' },
-  { artist_id: 2, name: 'Carlos', bio: 'Namorado da Julia', year: 2004, instagram: '@carlllos.png' }
-];
-
-let arts = [
-  { art_id: 1, title: 'Gato Mafioso', description: 'Um gato vestindo terno que esconde o segredo da origem de sua fortuna', year: 2024, url_image: 'a', artist_id: 1 },
-  { art_id: 2, title: 'Ganso de Terno', description: 'Um ganso de classe', year: 2024, url_image: 'a', artist_id: 1 }
-];
-
-let exhibitions = [
-  { exhibition_id: 1, name: 'Exibição de obras da Julia', description: 'Exposição sobre as obras da Julia' }
-];
-
-let exhibition_arts = [
-  { exhibition_art_id: 1, exhibition_id: 1, art_id: 1 },
-  { exhibition_art_id: 2, exhibition_id: 1, art_id: 2 }
-];
-
-// Função para simular atraso de rede
-function delay(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
+// Function to show notification
+function showNotification(type, message) {
+    const notification = document.getElementById(`${type}-notification`);
+    if (!notification) return;
+    
+    // Set message
+    notification.textContent = message;
+    
+    // Show notification
+    notification.classList.add('active');
+    
+    // Hide notification after 3 seconds
+    setTimeout(() => {
+        notification.classList.remove('active');
+    }, 3000);
 }
 
-// Intercepta chamadas fetch para simular API
-const originalFetch = window.fetch;
-window.fetch = async function(url, options) {
-  // Simula atraso de rede (100-300ms)
-  await delay(Math.random() * 200 + 100);
-  
-  // Extrai o caminho da URL
-  const path = url.split('/').slice(2).join('/');
-  
-  // Simula respostas da API
-  if (path.startsWith('api/')) {
-    const apiPath = path.substring(4);
-    
-    // Método HTTP
-    const method = options ? options.method || 'GET' : 'GET';
-    
-    // Corpo da requisição
-    let body = null;
-    if (options && options.body) {
-      body = JSON.parse(options.body);
+// Function to fetch all art pieces
+async function fetchArts() {
+    try {
+        const response = await fetch(`${API_BASE_URL}/read.php`);
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return await response.json();
+    } catch (error) {
+        console.error('Error fetching art pieces:', error);
+        showNotification('error', 'Erro ao carregar obras de arte');
+        return [];
     }
-    
-    // Processa a requisição
-    let response = await processApiRequest(apiPath, method, body);
-    
-    // Retorna uma resposta simulada
-    return {
-      ok: response.status >= 200 && response.status < 300,
-      status: response.status,
-      json: async () => response.data
-    };
-  }
-  
-  // Para outras requisições, usa o fetch original
-  return originalFetch.apply(window, arguments);
-};
+}
 
-// Processa requisições da API
-async function processApiRequest(path, method, body) {
-  // Artistas
-  if (path === 'artists' && method === 'GET') {
-    return { status: 200, data: artists };
-  }
-  
-  if (path === 'artists' && method === 'POST') {
-    const newArtist = {
-      artist_id: artists.length > 0 ? Math.max(...artists.map(a => a.artist_id)) + 1 : 1,
-      name: body.name,
-      bio: body.bio,
-      year: body.year,
-      instagram: body.instagram
-    };
-    artists.push(newArtist);
-    return { status: 201, data: newArtist };
-  }
-  
-  if (path.startsWith('artists/') && method === 'GET') {
-    const id = parseInt(path.split('/')[1]);
-    const artist = artists.find(a => a.artist_id === id);
-    if (artist) {
-      return { status: 200, data: artist };
+// Function to create a new art piece
+async function createArt(artData) {
+    try {
+        const response = await fetch(`${API_BASE_URL}/create.php`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(artData)
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        
+        return await response.json();
+    } catch (error) {
+        console.error('Error creating art piece:', error);
+        showNotification('error', 'Erro ao criar obra de arte');
+        throw error;
     }
-    return { status: 404, data: { error: 'Artista não encontrado' } };
-  }
-  
-  if (path.startsWith('artists/') && method === 'PUT') {
-    const id = parseInt(path.split('/')[1]);
-    const index = artists.findIndex(a => a.artist_id === id);
-    if (index !== -1) {
-      artists[index] = {
-        ...artists[index],
-        name: body.name,
-        bio: body.bio,
-        year: body.year,
-        instagram: body.instagram
-      };
-      return { status: 200, data: { success: true } };
+}
+
+// Function to update an art piece
+async function updateArt(id, artData) {
+    try {
+        const response = await fetch(`${API_BASE_URL}/update.php?id=${id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(artData)
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        
+        return await response.json();
+    } catch (error) {
+        console.error('Error updating art piece:', error);
+        showNotification('error', 'Erro ao atualizar obra de arte');
+        throw error;
     }
-    return { status: 404, data: { error: 'Artista não encontrado' } };
-  }
-  
-  if (path.startsWith('artists/') && method === 'DELETE') {
-    const id = parseInt(path.split('/')[1]);
-    const index = artists.findIndex(a => a.artist_id === id);
-    if (index !== -1) {
-      artists.splice(index, 1);
-      return { status: 200, data: { success: true } };
+}
+
+// Function to delete an art piece
+async function deleteArt(id) {
+    try {
+        const response = await fetch(`${API_BASE_URL}/delete.php?id=${id}`, {
+            method: 'DELETE'
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        
+        return await response.json();
+    } catch (error) {
+        console.error('Error deleting art piece:', error);
+        showNotification('error', 'Erro ao excluir obra de arte');
+        throw error;
     }
-    return { status: 404, data: { error: 'Artista não encontrado' } };
-  }
-  
-  // Obras de Arte
-  if (path === 'arts' && method === 'GET') {
-    return { status: 200, data: arts };
-  }
-  
-  if (path === 'arts' && method === 'POST') {
-    const newArt = {
-      art_id: arts.length > 0 ? Math.max(...arts.map(a => a.art_id)) + 1 : 1,
-      title: body.title,
-      description: body.description,
-      year: body.year,
-      url_image: body.urlImage,
-      artist_id: body.artistId
-    };
-    arts.push(newArt);
-    return { status: 201, data: newArt };
-  }
-  
-  if (path.startsWith('arts/') && method === 'GET') {
-    const id = parseInt(path.split('/')[1]);
-    const art = arts.find(a => a.art_id === id);
-    if (art) {
-      return { status: 200, data: art };
+}
+
+// Function to fetch all artists
+async function fetchArtists() {
+    try {
+        const response = await fetch(`${API_BASE_URL}/read_artists.php`);
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return await response.json();
+    } catch (error) {
+        console.error('Error fetching artists:', error);
+        showNotification('error', 'Erro ao carregar artistas');
+        return [];
     }
-    return { status: 404, data: { error: 'Obra de arte não encontrada' } };
-  }
-  
-  if (path.startsWith('arts/') && method === 'PUT') {
-    const id = parseInt(path.split('/')[1]);
-    const index = arts.findIndex(a => a.art_id === id);
-    if (index !== -1) {
-      arts[index] = {
-        ...arts[index],
-        title: body.title,
-        description: body.description,
-        year: body.year,
-        url_image: body.urlImage,
-        artist_id: body.artistId
-      };
-      return { status: 200, data: { success: true } };
+}
+
+// Function to create a new artist
+async function createArtist(artistData) {
+    try {
+        const response = await fetch(`${API_BASE_URL}/create_artist.php`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(artistData)
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        
+        return await response.json();
+    } catch (error) {
+        console.error('Error creating artist:', error);
+        showNotification('error', 'Erro ao criar artista');
+        throw error;
     }
-    return { status: 404, data: { error: 'Obra de arte não encontrada' } };
-  }
-  
-  if (path.startsWith('arts/') && method === 'DELETE') {
-    const id = parseInt(path.split('/')[1]);
-    const index = arts.findIndex(a => a.art_id === id);
-    if (index !== -1) {
-      arts.splice(index, 1);
-      return { status: 200, data: { success: true } };
+}
+
+// Function to update an artist
+async function updateArtist(id, artistData) {
+    try {
+        const response = await fetch(`${API_BASE_URL}/update_artist.php?id=${id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(artistData)
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        
+        return await response.json();
+    } catch (error) {
+        console.error('Error updating artist:', error);
+        showNotification('error', 'Erro ao atualizar artista');
+        throw error;
     }
-    return { status: 404, data: { error: 'Obra de arte não encontrada' } };
-  }
-  
-  // Exposições
-  if (path === 'exhibitions' && method === 'GET') {
-    return { status: 200, data: exhibitions };
-  }
-  
-  if (path === 'exhibitions' && method === 'POST') {
-    const newExhibition = {
-      exhibition_id: exhibitions.length > 0 ? Math.max(...exhibitions.map(e => e.exhibition_id)) + 1 : 1,
-      name: body.name,
-      description: body.description
-    };
-    exhibitions.push(newExhibition);
-    return { status: 201, data: newExhibition };
-  }
-  
-  if (path.startsWith('exhibitions/') && method === 'GET') {
-    const id = parseInt(path.split('/')[1]);
-    const exhibition = exhibitions.find(e => e.exhibition_id === id);
-    if (exhibition) {
-      return { status: 200, data: exhibition };
+}
+
+// Function to delete an artist
+async function deleteArtist(id) {
+    try {
+        const response = await fetch(`${API_BASE_URL}/delete_artist.php?id=${id}`, {
+            method: 'DELETE'
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        
+        return await response.json();
+    } catch (error) {
+        console.error('Error deleting artist:', error);
+        showNotification('error', 'Erro ao excluir artista');
+        throw error;
     }
-    return { status: 404, data: { error: 'Exposição não encontrada' } };
-  }
-  
-  if (path.startsWith('exhibitions/') && method === 'PUT') {
-    const id = parseInt(path.split('/')[1]);
-    const index = exhibitions.findIndex(e => e.exhibition_id === id);
-    if (index !== -1) {
-      exhibitions[index] = {
-        ...exhibitions[index],
-        name: body.name,
-        description: body.description
-      };
-      return { status: 200, data: { success: true } };
+}
+
+// Function to fetch all exhibitions
+async function fetchExhibitions() {
+    try {
+        const response = await fetch(`${API_BASE_URL}/read_exhibitions.php`);
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return await response.json();
+    } catch (error) {
+        console.error('Error fetching exhibitions:', error);
+        showNotification('error', 'Erro ao carregar exposições');
+        return [];
     }
-    return { status: 404, data: { error: 'Exposição não encontrada' } };
-  }
-  
-  if (path.startsWith('exhibitions/') && method === 'DELETE') {
-    const id = parseInt(path.split('/')[1]);
-    const index = exhibitions.findIndex(e => e.exhibition_id === id);
-    if (index !== -1) {
-      exhibitions.splice(index, 1);
-      return { status: 200, data: { success: true } };
+}
+
+// Function to create a new exhibition
+async function createExhibition(exhibitionData) {
+    try {
+        const response = await fetch(`${API_BASE_URL}/create_exhibition.php`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(exhibitionData)
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        
+        return await response.json();
+    } catch (error) {
+        console.error('Error creating exhibition:', error);
+        showNotification('error', 'Erro ao criar exposição');
+        throw error;
     }
-    return { status: 404, data: { error: 'Exposição não encontrada' } };
-  }
-  
-  // Relacionamento entre Exposições e Obras
-  if (path.match(/^exhibitions\/\d+\/arts$/) && method === 'GET') {
-    const exhibitionId = parseInt(path.split('/')[1]);
-    const exhibitionArtsIds = exhibition_arts
-      .filter(ea => ea.exhibition_id === exhibitionId)
-      .map(ea => ea.art_id);
-    const exhibitionArts = arts.filter(art => exhibitionArtsIds.includes(art.art_id));
-    return { status: 200, data: exhibitionArts };
-  }
-  
-  if (path.match(/^exhibitions\/\d+\/arts\/\d+$/) && method === 'POST') {
-    const parts = path.split('/');
-    const exhibitionId = parseInt(parts[1]);
-    const artId = parseInt(parts[3]);
-    
-    // Verificar se já existe
-    const exists = exhibition_arts.some(ea => 
-      ea.exhibition_id === exhibitionId && ea.art_id === artId
-    );
-    
-    if (exists) {
-      return { status: 400, data: { error: 'Relação já existe' } };
+}
+
+// Function to update an exhibition
+async function updateExhibition(id, exhibitionData) {
+    try {
+        const response = await fetch(`${API_BASE_URL}/update_exhibition.php?id=${id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(exhibitionData)
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        
+        return await response.json();
+    } catch (error) {
+        console.error('Error updating exhibition:', error);
+        showNotification('error', 'Erro ao atualizar exposição');
+        throw error;
     }
-    
-    const newExhibitionArt = {
-      exhibition_art_id: exhibition_arts.length > 0 ? Math.max(...exhibition_arts.map(ea => ea.exhibition_art_id)) + 1 : 1,
-      exhibition_id: exhibitionId,
-      art_id: artId
-    };
-    
-    exhibition_arts.push(newExhibitionArt);
-    return { status: 201, data: newExhibitionArt };
-  }
-  
-  if (path.match(/^exhibitions\/\d+\/arts\/\d+$/) && method === 'DELETE') {
-    const parts = path.split('/');
-    const exhibitionId = parseInt(parts[1]);
-    const artId = parseInt(parts[3]);
-    
-    const index = exhibition_arts.findIndex(ea => 
-      ea.exhibition_id === exhibitionId && ea.art_id === artId
-    );
-    
-    if (index !== -1) {
-      exhibition_arts.splice(index, 1);
-      return { status: 200, data: { success: true } };
+}
+
+// Function to delete an exhibition
+async function deleteExhibition(id) {
+    try {
+        const response = await fetch(`${API_BASE_URL}/delete_exhibition.php?id=${id}`, {
+            method: 'DELETE'
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        
+        return await response.json();
+    } catch (error) {
+        console.error('Error deleting exhibition:', error);
+        showNotification('error', 'Erro ao excluir exposição');
+        throw error;
     }
-    
-    return { status: 404, data: { error: 'Relação não encontrada' } };
-  }
-  
-  // Rota não encontrada
-  return { status: 404, data: { error: 'Rota não encontrada' } };
 }

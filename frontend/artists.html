@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Goski Gallery - Artistas</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <header>
+        <h1>Goski Gallery</h1>
+        <nav>
+            <ul>
+                <li><a href="index.html">Página Inicial</a></li>
+                <li><a href="create.html">Adicionar Obra</a></li>
+                <li><a href="library.html">Biblioteca</a></li>
+                <li><a href="artists.html" class="active">Artistas</a></li>
+                <li><a href="exhibitions.html">Exposições</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <h1>Artistas</h1>
+        <h2>Gerenciar artistas da galeria</h2>
+        
+        <section id="add-artist-section">
+            <h2>Adicionar Novo Artista</h2>
+            <form id="add-artist-form" class="create-form">
+                <input type="text" id="artist-name" placeholder="Nome do artista" required>
+                <textarea id="artist-bio" placeholder="Biografia do artista" required></textarea>
+                <input type="number" id="artist-year" placeholder="Ano de nascimento" required>
+                <input type="text" id="artist-instagram" placeholder="Instagram do artista">
+                
+                <button type="submit" class="submit-btn">Adicionar Artista</button>
+            </form>
+        </section>
+        
+        <section id="artists-section">
+            <h2>Lista de Artistas</h2>
+            <div class="grid" id="artists-grid">
+                <!-- Conteúdo será preenchido dinamicamente pelo JavaScript -->
+                <p class="loading">Carregando artistas...</p>
+            </div>
+        </section>
+    </main>
+    
+    <!-- Modal para edição de artistas -->
+    <div class="modal" id="artist-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Editar Artista</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <form id="edit-artist-form" class="create-form">
+                <input type="hidden" id="edit-artist-id">
+                <input type="text" id="edit-artist-name" placeholder="Nome do artista" required>
+                <textarea id="edit-artist-bio" placeholder="Biografia do artista" required></textarea>
+                <input type="number" id="edit-artist-year" placeholder="Ano de nascimento" required>
+                <input type="text" id="edit-artist-instagram" placeholder="Instagram do artista">
+                <div class="modal-footer">
+                    <button type="button" class="modal-close-btn">Cancelar</button>
+                    <button type="submit">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Notificações -->
+    <div class="notification success" id="success-notification">Operação realizada com sucesso!</div>
+    <div class="notification error" id="error-notification">Ocorreu um erro. Tente novamente.</div>
+    
+    <footer>
+        <p>&copy; 2025 Goski Gallery - Todos os direitos reservados</p>
+        <p>goskigallery.com</p>
+    </footer>
+    
+    <script src="js/api.js"></script>
+    <script src="js/artists.js"></script>
+</body>
+</html>

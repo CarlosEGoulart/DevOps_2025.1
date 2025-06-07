@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Goski Gallery - Exposições</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <header>
+        <h1>Goski Gallery</h1>
+        <nav>
+            <ul>
+                <li><a href="index.html">Página Inicial</a></li>
+                <li><a href="create.html">Adicionar Obra</a></li>
+                <li><a href="library.html">Biblioteca</a></li>
+                <li><a href="artists.html">Artistas</a></li>
+                <li><a href="exhibitions.html" class="active">Exposições</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <h1>Exposições</h1>
+        <h2>Gerenciar exposições da galeria</h2>
+        
+        <section id="add-exhibition-section">
+            <h2>Adicionar Nova Exposição</h2>
+            <form id="add-exhibition-form" class="create-form">
+                <input type="text" id="exhibition-name" placeholder="Nome da exposição" required>
+                <textarea id="exhibition-description" placeholder="Descrição da exposição" required></textarea>
+                
+                <div class="form-group">
+                    <label for="exhibition-artworks">Obras de Arte:</label>
+                    <div class="multi-select-container">
+                        <select id="exhibition-artworks" multiple>
+                            <!-- Opções serão carregadas dinamicamente via JavaScript -->
+                        </select>
+                        <p class="help-text">Segure Ctrl (ou Cmd no Mac) para selecionar múltiplas obras</p>
+                    </div>
+                </div>
+                
+                <button type="submit" class="submit-btn">Adicionar Exposição</button>
+            </form>
+        </section>
+        
+        <section id="exhibitions-section">
+            <h2>Lista de Exposições</h2>
+            <div class="grid" id="exhibitions-grid">
+                <!-- Conteúdo será preenchido dinamicamente pelo JavaScript -->
+                <p class="loading">Carregando exposições...</p>
+            </div>
+        </section>
+    </main>
+    
+    <!-- Modal para edição de exposições -->
+    <div class="modal" id="exhibition-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Editar Exposição</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <form id="edit-exhibition-form" class="create-form">
+                <input type="hidden" id="edit-exhibition-id">
+                <input type="text" id="edit-exhibition-name" placeholder="Nome da exposição" required>
+                <textarea id="edit-exhibition-description" placeholder="Descrição da exposição" required></textarea>
+                
+                <div class="form-group">
+                    <label for="edit-exhibition-artworks">Obras de Arte:</label>
+                    <div class="multi-select-container">
+                        <select id="edit-exhibition-artworks" multiple>
+                            <!-- Opções serão carregadas dinamicamente via JavaScript -->
+                        </select>
+                        <p class="help-text">Segure Ctrl (ou Cmd no Mac) para selecionar múltiplas obras</p>
+                    </div>
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="modal-close-btn">Cancelar</button>
+                    <button type="submit">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Notificações -->
+    <div class="notification success" id="success-notification">Operação realizada com sucesso!</div>
+    <div class="notification error" id="error-notification">Ocorreu um erro. Tente novamente.</div>
+    
+    <footer>
+        <p>&copy; 2025 Goski Gallery - Todos os direitos reservados</p>
+        <p>goskigallery.com</p>
+    </footer>
+    
+    <script src="js/api.js"></script>
+    <script src="js/exhibitions.js"></script>
+</body>
+</html>

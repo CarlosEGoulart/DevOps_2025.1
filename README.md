@@ -1,154 +1,57 @@
-# Galeria de Arte - Goski Gallery
+# Goski Gallery - CRUD Application
 
-Este é um projeto completo de Galeria de Arte com backend em TypeScript/Express, frontend em HTML/CSS/JS e banco de dados MySQL, seguindo o modelo lógico especificado.
+This is a simple CRUD (Create, Read, Update, Delete) application for managing art pieces in the Goski Gallery.
 
-## Estrutura do Projeto
+## Features
 
-```
-projeto/
-├── backend/               # Código do servidor
-│   ├── src/               # Código-fonte
-│   │   ├── config/        # Configurações do sistema
-│   │   ├── controllers/   # Controladores (lógica de negócios)
-│   │   ├── setup/         # Scripts de configuração
-│   │   │   └── sql/       # Scripts SQL
-│   │   ├── index.ts       # Ponto de entrada da aplicação
-│   │   ├── routes.ts      # Definição de rotas da API
-│   │   └── server.ts      # Configuração do servidor Express
-│   ├── .env.example       # Exemplo de variáveis de ambiente
-│   ├── package.json       # Dependências e scripts
-│   └── tsconfig.json      # Configuração do TypeScript
-│
-└── frontend/              # Interface do usuário
-    ├── css/               # Estilos CSS
-    ├── js/                # Scripts JavaScript
-    ├── index.html         # Página inicial
-    ├── library.html       # Página de biblioteca
-    └── create.html        # Página de criação
-```
+- Create, view, edit, and delete art pieces
+- Simple and responsive design
+- No frameworks used, just pure PHP, HTML, CSS, and JavaScript
 
-## Modelo de Dados
+## Setup Instructions
 
-O banco de dados segue o seguinte modelo lógico:
+### Database Setup
 
-1. **Artist (Artista)**
-   - artist_id (PK)
-   - name
-   - bio
-   - year
-   - instagram
+1. Create a MySQL database named `artGallery`
+2. Import the `backend/create_tables.sql` file to create the necessary tables and sample data
+3. Update the database connection details in `backend/config.php` if needed
 
-2. **Art (Obra de Arte)**
-   - art_id (PK)
-   - title
-   - description
-   - year
-   - url_image
-   - artist_id (FK -> Artist)
+### Running the Application
 
-3. **Exhibition (Exposição)**
-   - exhibition_id (PK)
-   - name
-   - description
+1. Place the entire project folder in your web server's document root (e.g., htdocs for XAMPP)
+2. Access the application through your web browser: `http://localhost/goski_gallery/frontend/`
 
-4. **Exhibition_art (Relação Exposição-Obra)**
-   - exhibition_art_id (PK)
-   - art_id (FK -> Art)
-   - exhibition_id (FK -> Exhibition)
+## Project Structure
 
-## Requisitos
+- `backend/`: Contains PHP files for the API and database operations
+  - `config.php`: Database connection configuration
+  - `create.php`: API endpoint for creating art pieces
+  - `read.php`: API endpoint for retrieving all art pieces
+  - `read_single.php`: API endpoint for retrieving a single art piece
+  - `update.php`: API endpoint for updating art pieces
+  - `delete.php`: API endpoint for deleting art pieces
+  - `create_tables.sql`: SQL script to create the database tables and sample data
 
-- Node.js (v14+)
-- MySQL (v5.7+)
+- `frontend/`: Contains HTML, CSS, and JavaScript files for the user interface
+  - `index.html`: Homepage with featured art pieces
+  - `create.html`: Page for adding new art pieces
+  - `library.html`: Page for viewing, editing, and deleting art pieces
+  - `css/`: Contains stylesheets
+    - `styles.css`: Main stylesheet for the application
+  - `js/`: Contains JavaScript files
+    - `api.js`: Utility functions for API communication
+    - `index.js`: Script for the homepage
+    - `create.js`: Script for the create page
+    - `library.js`: Script for the library page
+  - `images/`: Directory for storing image assets
 
-## Configuração e Execução
+## Technologies Used
 
-### 1. Configurar o Banco de Dados
+- Backend: PHP (no frameworks)
+- Database: MySQL
+- Frontend: HTML, CSS, JavaScript (no frameworks)
+- Fonts: Google Fonts (Montserrat, Playfair Display)
 
-1. Certifique-se de que o MySQL está instalado e em execução
-2. Crie um banco de dados vazio (ou use um existente)
-3. Copie o arquivo `.env.example` para `.env` e ajuste as configurações:
+## Domain
 
-```
-DB_HOST=localhost
-DB_PORT=3306
-DB_USER=seu_usuario
-DB_PASSWORD=sua_senha
-DB_NAME=galeria_arte
-```
-
-### 2. Instalar Dependências e Configurar o Projeto
-
-Execute o seguinte comando na pasta `backend`:
-
-```bash
-npm run setup
-```
-
-Este comando irá:
-- Instalar todas as dependências
-- Compilar o código TypeScript
-- Criar as tabelas no banco de dados
-- Inserir dados iniciais de exemplo
-
-### 3. Iniciar o Servidor
-
-```bash
-npm start
-```
-
-O servidor será iniciado em http://localhost:3000
-
-## Funcionalidades
-
-- **Artistas**: Cadastro, visualização, edição e exclusão de artistas
-- **Obras de Arte**: Cadastro, visualização, edição e exclusão de obras de arte
-- **Exposições**: Cadastro, visualização, edição e exclusão de exposições
-- **Relacionamentos**: Associação de obras de arte a exposições
-
-## Rotas da API
-
-### Artistas
-- `GET /api/artists` - Listar todos os artistas
-- `POST /api/artists` - Criar novo artista
-- `GET /api/artists/:id` - Obter artista por ID
-- `PUT /api/artists/:id` - Atualizar artista
-- `DELETE /api/artists/:id` - Excluir artista
-
-### Obras de Arte
-- `GET /api/arts` - Listar todas as obras de arte
-- `POST /api/arts` - Criar nova obra de arte
-- `GET /api/arts/:id` - Obter obra de arte por ID
-- `PUT /api/arts/:id` - Atualizar obra de arte
-- `DELETE /api/arts/:id` - Excluir obra de arte
-- `GET /api/artists/:id/arts` - Listar obras de arte de um artista
-
-### Exposições
-- `GET /api/exhibitions` - Listar todas as exposições
-- `POST /api/exhibitions` - Criar nova exposição
-- `GET /api/exhibitions/:id` - Obter exposição por ID
-- `PUT /api/exhibitions/:id` - Atualizar exposição
-- `DELETE /api/exhibitions/:id` - Excluir exposição
-- `GET /api/exhibitions/:id/arts` - Listar obras de arte em uma exposição
-- `POST /api/exhibitions/:exhibitionId/arts/:artId` - Adicionar obra de arte a uma exposição
-- `DELETE /api/exhibitions/:exhibitionId/arts/:artId` - Remover obra de arte de uma exposição
-
-## Solução de Problemas
-
-### Erro de conexão com o banco de dados
-- Verifique se o MySQL está em execução
-- Confirme se as credenciais no arquivo `.env` estão corretas
-- Certifique-se de que o banco de dados especificado existe
-
-### Erro ao iniciar o servidor
-- Verifique se a porta 3000 está disponível
-- Certifique-se de que todas as dependências foram instaladas com `npm install`
-- Verifique se o código foi compilado com `npm run build`
-
-## Desenvolvimento
-
-Para desenvolvimento, você pode usar o modo de desenvolvimento que reinicia automaticamente o servidor quando os arquivos são alterados:
-
-```bash
-npm run dev
-```
+goskigallery.com

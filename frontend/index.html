@@ -3,10 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Galeria de Arte - Goski Gallery</title>
+    <title>Goski Gallery - Página Inicial</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/styles.css">
-    <script src="js/api.js"></script>
 </head>
 <body>
     <header>
@@ -14,22 +13,41 @@
         <nav>
             <ul>
                 <li><a href="index.html" class="active">Página Inicial</a></li>
-                <li><a href="create.html">Criar Obra</a></li>
+                <li><a href="create.html">Adicionar Obra</a></li>
                 <li><a href="library.html">Biblioteca</a></li>
+                <li><a href="artists.html">Artistas</a></li>
+                <li><a href="exhibitions.html">Exposições</a></li>
             </ul>
         </nav>
     </header>
     <main>
-        <h1>Uma galeria de arte</h1>
-        <h2>Explore e compartilhe obras de arte incríveis</h2>
+        <h1>Bem-vindo à Goski Gallery</h1>
+        <h2>Sua galeria de arte digital</h2>
         
-        <div class="featured-art">
-            <p>Descubra nossa coleção exclusiva de obras de arte e artistas renomados. Adicione suas próprias criações ou explore o trabalho de outros artistas.</p>
-            <a href="library.html" class="cta-button">Explorar Galeria</a>
-        </div>
+        <section class="intro">
+            <p>A Goski Gallery é um espaço dedicado à arte em todas as suas formas. Aqui você encontra obras de diversos artistas e pode explorar diferentes estilos e épocas.</p>
+            <p>Navegue pela nossa biblioteca para descobrir obras incríveis, conheça nossos artistas ou explore nossas exposições temáticas.</p>
+        </section>
+        
+        <section class="featured">
+            <h2>Obras em Destaque</h2>
+            <div class="grid" id="featured-arts">
+                <!-- Conteúdo será preenchido dinamicamente pelo JavaScript -->
+                <p class="loading">Carregando obras em destaque...</p>
+            </div>
+        </section>
     </main>
+    
+    <!-- Notificações -->
+    <div class="notification success" id="success-notification">Operação realizada com sucesso!</div>
+    <div class="notification error" id="error-notification">Ocorreu um erro. Tente novamente.</div>
+    
     <footer>
         <p>&copy; 2025 Goski Gallery - Todos os direitos reservados</p>
+        <p>goskigallery.com</p>
     </footer>
+    
+    <script src="js/api.js"></script>
+    <script src="js/index.js"></script>
 </body>
 </html>

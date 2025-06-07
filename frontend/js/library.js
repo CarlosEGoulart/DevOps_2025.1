@@ -1,363 +1,189 @@
-// Script para a página de biblioteca
+// Script for library.js - Handles the artwork listing, editing and deletion functionality
 document.addEventListener('DOMContentLoaded', function() {
-    // Carregar dados iniciais
-    loadData();
+    // Load all artworks
+    loadArtworks();
     
-    // Configurar listeners para modais
+    // Set up modal listeners
     setupModalListeners();
     
-    // Configurar listeners para notificações
-    setupNotificationListeners();
+    // Set up edit form submission
+    const editForm = document.getElementById('edit-artwork-form');
+    if (editForm) {
+        editForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            updateArtwork();
+        });
+    }
 });
 
-// Função para carregar dados da API
-async function loadData() {
+// Function to load all artworks
+async function loadArtworks() {
     try {
-        // Buscar dados da API
-        const artistsResponse = await fetch('/api/artists');
-        const artsResponse = await fetch('/api/arts');
-        const exhibitionsResponse = await fetch('/api/exhibitions');
+        const arts = await fetchArts();
         
-        const artists = await artistsResponse.json();
-        const arts = await artsResponse.json();
-        const exhibitions = await exhibitionsResponse.json();
+        // Get the container for artworks
+        const artworksGrid = document.getElementById('artworks-grid');
         
-        // Renderizar os dados nas grids
-        renderArtists(artists);
-        renderArtworks(arts);
-        renderExhibitions(exhibitions);
-    } catch (error) {
-        console.error('Erro ao carregar dados:', error);
-        showNotification('error', 'Erro ao carregar dados. Tente novamente.');
-    }
-}
-
-// Função para renderizar artistas
-function renderArtists(artists) {
-    const grid = document.getElementById('artists-grid');
-    if (!grid) return;
-    
-    grid.innerHTML = '';
-    
-    artists.forEach(artist => {
-        const card = document.createElement('div');
-        card.className = 'card';
-        card.innerHTML = `
-            <div class="card-content">
-                <h3 class="card-title">${artist.name}</h3>
-                <p class="card-text">${artist.bio || 'Sem biografia'}</p>
-                <p class="card-text">Nascimento: ${artist.year}</p>
-                <p class="card-text">Instagram: ${artist.instagram || 'Não informado'}</p>
-                <div class="card-actions">
-                    <button class="btn-edit" data-id="${artist.artist_id}" data-type="artist">Editar</button>
-                    <button class="btn-delete" data-id="${artist.artist_id}" data-type="artist">Excluir</button>
-                </div>
-            </div>
-        `;
+        // Clear loading message
+        artworksGrid.innerHTML = '';
         
-        // Adicionar event listeners para os botões
-        const editBtn = card.querySelector('.btn-edit');
-        const deleteBtn = card.querySelector('.btn-delete');
-        
-        editBtn.addEventListener('click', () => openEditModal('artist', artist));
-        deleteBtn.addEventListener('click', () => confirmDelete('artist', artist.artist_id, artist.name));
-        
-        grid.appendChild(card);
-    });
-}
-
-// Função para renderizar obras de arte
-function renderArtworks(artworks) {
-    const grid = document.getElementById('artworks-grid');
-    if (!grid) return;
-    
-    grid.innerHTML = '';
-    
-    artworks.forEach(artwork => {
-        const card = document.createElement('div');
-        card.className = 'card';
-        
-        // Verificar se há URL de imagem
-        const imageUrl = artwork.url_image || 'https://via.placeholder.com/300x200?text=Sem+Imagem';
-        
-        card.innerHTML = `
-            <div class="card-image" style="background-image: url('${imageUrl}')"></div>
-            <div class="card-content">
-                <h3 class="card-title">${artwork.title}</h3>
-                <p class="card-text">${artwork.description || 'Sem descrição'}</p>
-                <p class="card-text">Ano: ${artwork.year}</p>
-                <p class="card-text">Artista: ${artwork.artist_name || 'Desconhecido'}</p>
-                <div class="card-actions">
-                    <button class="btn-edit" data-id="${artwork.art_id}" data-type="artwork">Editar</button>
-                    <button class="btn-delete" data-id="${artwork.art_id}" data-type="artwork">Excluir</button>
-                </div>
-            </div>
-        `;
-        
-        // Adicionar event listeners para os botões
-        const editBtn = card.querySelector('.btn-edit');
-        const deleteBtn = card.querySelector('.btn-delete');
-        
-        editBtn.addEventListener('click', () => openEditModal('artwork', artwork));
-        deleteBtn.addEventListener('click', () => confirmDelete('artwork', artwork.art_id, artwork.title));
-        
-        grid.appendChild(card);
-    });
-}
-
-// Função para renderizar exposições
-function renderExhibitions(exhibitions) {
-    const grid = document.getElementById('exhibitions-grid');
-    if (!grid) return;
-    
-    grid.innerHTML = '';
-    
-    exhibitions.forEach(exhibition => {
-        const card = document.createElement('div');
-        card.className = 'card';
-        
-        // Criar a lista de obras vinculadas à exposição
-        let artworksList = '<p class="no-artworks">Nenhuma obra vinculada a esta exposição.</p>';
-        
-        if (exhibition.artworks && exhibition.artworks.length > 0) {
-            const artworksItems = exhibition.artworks.map(artwork => 
-                `<li class="artwork-item">${artwork.title}</li>`
-            ).join('');
-            
-            artworksList = `
-                <div class="exhibition-artworks">
-                    <h4 class="artworks-title">Obras nesta exposição:</h4>
-                    <ul class="artworks-list">
-                        ${artworksItems}
-                    </ul>
-                </div>
-            `;
+        // If no arts found
+        if (arts.length === 0) {
+            artworksGrid.innerHTML = '<p>Nenhuma obra encontrada.</p>';
+            return;
         }
         
-        card.innerHTML = `
-            <div class="card-content">
-                <h3 class="card-title">${exhibition.name}</h3>
-                <p class="card-text">${exhibition.description || 'Sem descrição'}</p>
-                
-                ${artworksList}
-                
-                <div class="card-actions">
-                    <button class="btn-edit" data-id="${exhibition.exhibition_id}" data-type="exhibition">Editar</button>
-                    <button class="btn-delete" data-id="${exhibition.exhibition_id}" data-type="exhibition">Excluir</button>
-                </div>
-            </div>
-        `;
-        
-        // Adicionar event listeners para os botões
-        const editBtn = card.querySelector('.btn-edit');
-        const deleteBtn = card.querySelector('.btn-delete');
-        
-        editBtn.addEventListener('click', () => openEditModal('exhibition', exhibition));
-        deleteBtn.addEventListener('click', () => confirmDelete('exhibition', exhibition.exhibition_id, exhibition.name));
-        
-        grid.appendChild(card);
-    });
-}
-
-// Função para abrir modal de edição
-function openEditModal(type, item) {
-    const modal = document.getElementById(`${type}-modal`);
-    if (!modal) return;
-    
-    // Preencher o formulário com os dados do item
-    const form = modal.querySelector('form');
-    
-    switch (type) {
-        case 'artist':
-            document.getElementById('edit-artist-id').value = item.artist_id;
-            document.getElementById('edit-artist-name').value = item.name;
-            document.getElementById('edit-artist-bio').value = item.bio || '';
-            document.getElementById('edit-artist-year').value = item.year;
-            document.getElementById('edit-artist-instagram').value = item.instagram || '';
-            break;
-            
-        case 'artwork':
-            document.getElementById('edit-artwork-id').value = item.art_id;
-            document.getElementById('edit-artwork-title').value = item.title;
-            document.getElementById('edit-artwork-description').value = item.description || '';
-            document.getElementById('edit-artwork-year').value = item.year;
-            document.getElementById('edit-artwork-url').value = item.url_image || '';
-            break;
-            
-        case 'exhibition':
-            document.getElementById('edit-exhibition-id').value = item.exhibition_id;
-            document.getElementById('edit-exhibition-name').value = item.name;
-            document.getElementById('edit-exhibition-description').value = item.description || '';
-            break;
-    }
-    
-    // Configurar o formulário para submissão
-    form.onsubmit = function(e) {
-        e.preventDefault();
-        saveItem(type);
-    };
-    
-    // Mostrar o modal
-    modal.classList.add('active');
-}
-
-// Função para salvar item editado
-async function saveItem(type) {
-    try {
-        let id, data, endpoint;
-        
-        switch (type) {
-            case 'artist':
-                id = document.getElementById('edit-artist-id').value;
-                data = {
-                    name: document.getElementById('edit-artist-name').value,
-                    bio: document.getElementById('edit-artist-bio').value,
-                    year: parseInt(document.getElementById('edit-artist-year').value),
-                    instagram: document.getElementById('edit-artist-instagram').value
-                };
-                endpoint = `/api/artists/${id}`;
-                break;
-                
-            case 'artwork':
-                id = document.getElementById('edit-artwork-id').value;
-                data = {
-                    title: document.getElementById('edit-artwork-title').value,
-                    description: document.getElementById('edit-artwork-description').value,
-                    year: parseInt(document.getElementById('edit-artwork-year').value),
-                    urlImage: document.getElementById('edit-artwork-url').value
-                };
-                endpoint = `/api/arts/${id}`;
-                break;
-                
-            case 'exhibition':
-                id = document.getElementById('edit-exhibition-id').value;
-                data = {
-                    name: document.getElementById('edit-exhibition-name').value,
-                    description: document.getElementById('edit-exhibition-description').value
-                };
-                endpoint = `/api/exhibitions/${id}`;
-                break;
-        }
-        
-        // Enviar requisição para a API
-        const response = await fetch(endpoint, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
+        // Display all arts
+        arts.forEach(art => {
+            const card = createArtCard(art);
+            artworksGrid.appendChild(card);
         });
         
-        if (!response.ok) {
-            throw new Error('Erro ao salvar item');
-        }
-        
-        // Fechar o modal
-        closeModal(type);
-        
-        // Recarregar os dados
-        loadData();
-        
-        // Mostrar notificação de sucesso
-        showNotification('success', 'Item atualizado com sucesso!');
     } catch (error) {
-        console.error('Erro ao salvar item:', error);
-        showNotification('error', 'Erro ao salvar item. Tente novamente.');
+        console.error('Error loading artworks:', error);
+        showNotification('error', 'Erro ao carregar obras de arte');
     }
 }
 
-// Função para confirmar exclusão
-function confirmDelete(type, id, name) {
-    if (confirm(`Tem certeza que deseja excluir "${name}"?`)) {
-        deleteItem(type, id);
-    }
+// Function to create an art card element with edit and delete buttons
+function createArtCard(art) {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.dataset.id = art.art_id;
+    
+    // Use a placeholder image if url_image is not available
+    const imageUrl = art.url_image || 'https://via.placeholder.com/300x200?text=Sem+Imagem';
+    
+    card.innerHTML = `
+        <div class="card-image" style="background-image: url('${imageUrl}')"></div>
+        <div class="card-content">
+            <h3 class="card-title">${art.title}</h3>
+            <p class="card-text">${art.description || 'Sem descrição'}</p>
+            <p class="card-text">Ano: ${art.year || 'Desconhecido'}</p>
+            <p class="card-text">Artista: ${art.artist_name || 'Desconhecido'}</p>
+            <div class="card-actions">
+                <button class="btn-edit" data-id="${art.art_id}">Editar</button>
+                <button class="btn-delete" data-id="${art.art_id}">Excluir</button>
+            </div>
+        </div>
+    `;
+    
+    // Add event listeners for edit and delete buttons
+    const editBtn = card.querySelector('.btn-edit');
+    const deleteBtn = card.querySelector('.btn-delete');
+    
+    editBtn.addEventListener('click', () => openEditModal(art));
+    deleteBtn.addEventListener('click', () => confirmDelete(art.art_id, art.title));
+    
+    return card;
 }
 
-// Função para excluir item
-async function deleteItem(type, id) {
-    try {
-        let endpoint;
-        
-        switch (type) {
-            case 'artist':
-                endpoint = `/api/artists/${id}`;
-                break;
-            case 'artwork':
-                endpoint = `/api/arts/${id}`;
-                break;
-            case 'exhibition':
-                endpoint = `/api/exhibitions/${id}`;
-                break;
-        }
-        
-        // Enviar requisição para a API
-        const response = await fetch(endpoint, {
-            method: 'DELETE'
-        });
-        
-        if (!response.ok) {
-            throw new Error('Erro ao excluir item');
-        }
-        
-        // Recarregar os dados
-        loadData();
-        
-        // Mostrar notificação de sucesso
-        showNotification('success', 'Item excluído com sucesso!');
-    } catch (error) {
-        console.error('Erro ao excluir item:', error);
-        showNotification('error', 'Erro ao excluir item. Tente novamente.');
-    }
-}
-
-// Função para fechar modal
-function closeModal(type) {
-    const modal = document.getElementById(`${type}-modal`);
+// Function to open edit modal
+function openEditModal(art) {
+    // Fill form with art data
+    document.getElementById('edit-artwork-id').value = art.art_id;
+    document.getElementById('edit-artwork-title').value = art.title;
+    document.getElementById('edit-artwork-description').value = art.description || '';
+    document.getElementById('edit-artwork-year').value = art.year || '';
+    document.getElementById('edit-artwork-url').value = art.url_image || '';
+    document.getElementById('edit-artwork-artist').value = art.artist_name || '';
+    
+    // Show modal
+    const modal = document.getElementById('artwork-modal');
     if (modal) {
-        modal.classList.remove('active');
+        modal.classList.add('active');
     }
 }
 
-// Configurar listeners para modais
+// Function to update artwork
+async function updateArtwork() {
+    try {
+        // Get form values
+        const id = document.getElementById('edit-artwork-id').value;
+        const title = document.getElementById('edit-artwork-title').value;
+        const description = document.getElementById('edit-artwork-description').value;
+        const year = parseInt(document.getElementById('edit-artwork-year').value);
+        const url_image = document.getElementById('edit-artwork-url').value;
+        const artist_name = document.getElementById('edit-artwork-artist').value;
+        
+        // Create artwork data object
+        const artworkData = {
+            title,
+            description,
+            year,
+            url_image,
+            artist_name
+        };
+        
+        // Send data to API
+        const result = await updateArt(id, artworkData);
+        
+        if (result.success) {
+            // Close modal
+            closeModal();
+            
+            // Reload artworks
+            loadArtworks();
+            
+            // Show success notification
+            showNotification('success', 'Obra de arte atualizada com sucesso!');
+        } else {
+            throw new Error(result.error || 'Erro desconhecido');
+        }
+    } catch (error) {
+        console.error('Error updating artwork:', error);
+        showNotification('error', 'Erro ao atualizar obra de arte. Tente novamente.');
+    }
+}
+
+// Function to confirm deletion
+function confirmDelete(id, title) {
+    if (confirm(`Tem certeza que deseja excluir "${title}"?`)) {
+        deleteArtwork(id);
+    }
+}
+
+// Function to delete artwork
+async function deleteArtwork(id) {
+    try {
+        // Send delete request to API
+        const result = await deleteArt(id);
+        
+        if (result.success) {
+            // Reload artworks
+            loadArtworks();
+            
+            // Show success notification
+            showNotification('success', 'Obra de arte excluída com sucesso!');
+        } else {
+            throw new Error(result.error || 'Erro desconhecido');
+        }
+    } catch (error) {
+        console.error('Error deleting artwork:', error);
+        showNotification('error', 'Erro ao excluir obra de arte. Tente novamente.');
+    }
+}
+
+// Function to set up modal listeners
 function setupModalListeners() {
-    // Fechar modal ao clicar no botão de fechar ou fora do conteúdo
+    // Close modal when clicking on close button or outside content
     document.querySelectorAll('.modal-close, .modal-close-btn').forEach(button => {
-        button.addEventListener('click', function() {
-            const modal = this.closest('.modal');
-            if (modal) {
-                modal.classList.remove('active');
-            }
-        });
+        button.addEventListener('click', closeModal);
     });
     
-    // Fechar modal ao clicar fora do conteúdo
+    // Close modal when clicking outside content
     document.querySelectorAll('.modal').forEach(modal => {
         modal.addEventListener('click', function(e) {
             if (e.target === this) {
-                this.classList.remove('active');
+                closeModal();
             }
         });
     });
 }
 
-// Configurar listeners para notificações
-function setupNotificationListeners() {
-    // Nada a fazer aqui por enquanto
-}
-
-// Função para mostrar notificação
-function showNotification(type, message) {
-    const notification = document.getElementById(`${type}-notification`);
-    if (!notification) return;
-    
-    // Definir a mensagem
-    notification.textContent = message;
-    
-    // Mostrar a notificação
-    notification.classList.add('active');
-    
-    // Esconder a notificação após 3 segundos
-    setTimeout(() => {
-        notification.classList.remove('active');
-    }, 3000);
+// Function to close modal
+function closeModal() {
+    document.querySelectorAll('.modal').forEach(modal => {
+        modal.classList.remove('active');
+    });
 }
