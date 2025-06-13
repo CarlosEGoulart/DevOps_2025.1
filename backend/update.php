@@ -4,6 +4,15 @@ require_once "config.php";
 
 // Set header to return JSON
 header('Content-Type: application/json');
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: PUT, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type');
+
+// Handle preflight OPTIONS request
+if ($_SERVER["REQUEST_METHOD"] === "OPTIONS") {
+    http_response_code(200);
+    exit;
+}
 
 // Check if the request method is PUT
 if ($_SERVER["REQUEST_METHOD"] !== "PUT") {
@@ -38,7 +47,7 @@ try {
                 description = :description, 
                 year = :year, 
                 url_image = :url_image, 
-                artist_name = :artist_name 
+                artist_id = :artist_id 
             WHERE art_id = :art_id";
     
     $stmt = $pdo->prepare($sql);
@@ -48,7 +57,7 @@ try {
     $stmt->bindParam(":description", $data["description"] ?? null);
     $stmt->bindParam(":year", $data["year"] ?? null);
     $stmt->bindParam(":url_image", $data["url_image"] ?? null);
-    $stmt->bindParam(":artist_name", $data["artist_name"] ?? null);
+    $stmt->bindParam(":artist_id", $data["artist_id"] ?? null);
     $stmt->bindParam(":art_id", $id);
     
     // Execute the statement

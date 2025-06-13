@@ -4,6 +4,9 @@ require_once "config.php";
 
 // Set header to return JSON
 header('Content-Type: application/json');
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: POST');
+header('Access-Control-Allow-Headers: Content-Type');
 
 // Check if the request method is POST
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {
@@ -24,8 +27,8 @@ if (!isset($data["title"]) || empty($data["title"])) {
 
 try {
     // Prepare the SQL statement
-    $sql = "INSERT INTO art (title, description, year, url_image, artist_name) 
-            VALUES (:title, :description, :year, :url_image, :artist_name)";
+    $sql = "INSERT INTO art (title, description, year, url_image, artist_id) 
+            VALUES (:title, :description, :year, :url_image, :artist_id)";
     
     $stmt = $pdo->prepare($sql);
     
@@ -34,7 +37,7 @@ try {
     $stmt->bindParam(":description", $data["description"] ?? null);
     $stmt->bindParam(":year", $data["year"] ?? null);
     $stmt->bindParam(":url_image", $data["url_image"] ?? null);
-    $stmt->bindParam(":artist_name", $data["artist_name"] ?? null);
+    $stmt->bindParam(":artist_id", $data["artist_id"] ?? null);
     
     // Execute the statement
     $stmt->execute();
