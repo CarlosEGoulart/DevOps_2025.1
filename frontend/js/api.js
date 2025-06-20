@@ -1,5 +1,5 @@
 // API utility functions for Goski Gallery
-const API_BASE_URL = '.';  // Caminho relativo para o diretório atual
+const API_BASE_URL = '../backend';  // Caminho relativo para o diretório atual
 
 // Function to show notification
 function showNotification(type, message) {

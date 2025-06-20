@@ -1,6 +1,6 @@
 <?php
 // Database configuration
-$host = 'localhost';
+$host = 'db';
 $dbname = 'artGallery';
 $username = 'carlos';
 $password = '1234';

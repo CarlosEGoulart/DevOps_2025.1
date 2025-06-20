@@ -1,27 +1,24 @@
 <?php
-// Include database configuration
+// Arquivo: update.php (Versão Corrigida com busca de artista)
+
 require_once "config.php";
 
-// Set header to return JSON
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: PUT, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type');
 
-// Handle preflight OPTIONS request
 if ($_SERVER["REQUEST_METHOD"] === "OPTIONS") {
     http_response_code(200);
     exit;
 }
 
-// Check if the request method is PUT
 if ($_SERVER["REQUEST_METHOD"] !== "PUT") {
     http_response_code(405);
     echo json_encode(["error" => "Method not allowed. Use PUT."]);
     exit;
 }
 
-// Get the ID from the URL
 $id = isset($_GET['id']) ? $_GET['id'] : null;
 
 if (!$id) {
@@ -30,10 +27,8 @@ if (!$id) {
     exit;
 }
 
-// Get the posted data
 $data = json_decode(file_get_contents("php://input"), true);
 
-// Validate required fields
 if (!isset($data["title"]) || empty($data["title"])) {
     http_response_code(400);
     echo json_encode(["error" => "Title is required"]);
@@ -41,7 +36,17 @@ if (!isset($data["title"]) || empty($data["title"])) {
 }
 
 try {
-    // Prepare the SQL statement
+    // Lógica adicionada para buscar o ID do artista pelo nome
+    $artist_id = null;
+    if (!empty($data['artist_name'])) {
+        $artistStmt = $pdo->prepare("SELECT artist_id FROM artist WHERE name = :name LIMIT 1");
+        $artistStmt->execute([':name' => $data['artist_name']]);
+        $artist = $artistStmt->fetch();
+        if ($artist) {
+            $artist_id = $artist['artist_id'];
+        }
+    }
+
     $sql = "UPDATE art 
             SET title = :title, 
                 description = :description, 
@@ -52,32 +57,24 @@ try {
     
     $stmt = $pdo->prepare($sql);
     
-    // Bind parameters
-    $stmt->bindParam(":title", $data["title"]);
-    $stmt->bindParam(":description", $data["description"] ?? null);
-    $stmt->bindParam(":year", $data["year"] ?? null);
-    $stmt->bindParam(":url_image", $data["url_image"] ?? null);
-    $stmt->bindParam(":artist_id", $data["artist_id"] ?? null);
-    $stmt->bindParam(":art_id", $id);
+    // MÉTODO CORRIGIDO: Passando um array para execute()
+    $params = [
+        ':title'       => $data["title"],
+        ':description' => $data["description"] ?? null,
+        ':year'        => $data["year"] ?? null,
+        ':url_image'   => $data["url_image"] ?? null,
+        ':artist_id'   => $artist_id, // Usando o ID que buscamos
+        ':art_id'      => $id
+    ];
     
-    // Execute the statement
-    $stmt->execute();
+    $stmt->execute($params);
     
-    // Check if any row was affected
-    if ($stmt->rowCount() > 0) {
-        // Return success response
-        echo json_encode([
-            "success" => true,
-            "message" => "Art piece updated successfully"
-        ]);
-    } else {
-        // No rows affected, art piece not found
-        http_response_code(404);
-        echo json_encode(["error" => "Art piece not found"]);
-    }
+    echo json_encode([
+        "success" => true,
+        "message" => "Art piece updated successfully"
+    ]);
     
 } catch(PDOException $e) {
-    // Return error message
     http_response_code(500);
     echo json_encode(["error" => "Error updating art piece: " . $e->getMessage()]);
 }
