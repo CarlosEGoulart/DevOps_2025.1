@@ -1,0 +1,39 @@
+services:
+  db:
+    image: mysql:8.0-debian
+    environment:
+      - TZ=America/Sao_Paulo
+      # Variável CRÍTICA que estava faltando para a inicialização
+      - MYSQL_ROOT_PASSWORD=senha_super_secreta_do_root
+      # Variáveis para criar o banco e o usuário da sua aplicação
+      - MYSQL_DATABASE=artGallery
+      - MYSQL_USER=carlos
+      - MYSQL_PASSWORD=1234
+    volumes:
+      # Lembre-se de remover as linhas CREATE USER/DATABASE do seu .sql
+      - ./artGallery.sql:/docker-entrypoint-initdb.d/artGallery.sql
+      - mysqldata:/var/lib/mysql
+    healthcheck:
+      # Usamos o usuário root para a checagem, que é mais confiável na inicialização
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-psenha_super_secreta_do_root"]
+      timeout: 20s
+      retries: 10
+
+  web:
+    image: php:8.1-apache
+    environment:
+      - TZ=America/Sao_Paulo
+    volumes:
+      - ./frontend:/var/www/html
+      - ./backend:/var/www/html/backend
+      - ./start.sh:/opt/start.sh
+    ports:
+      - "80:80"
+    depends_on:
+      db:
+        condition: service_healthy
+    entrypoint: /bin/bash -c /opt/start.sh
+
+volumes:
+  mysqldata:
+
